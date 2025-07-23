@@ -150,7 +150,7 @@ app.get("/create-playlist", (req, res) => {
       url: `https://api.spotify.com/v1/users/${userId}/playlists`,
       headers: { Authorization: "Bearer " + access_token },
       body: {
-        name: "Shared Party Playlist",
+        name: "Sol–Ra.dio",
         public: true,
       },
       json: true,
