@@ -1,0 +1,61 @@
+/* ============================================================= */
+/* Variable */
+/* ============================================================= */
+:root {
+  --scrollbar-width: 20px;
+  --scrollbar-right: 0px;
+  --scrollbar-left: 17px;
+}
+
+
+/* ============================================================= */
+/* Basic */
+/* ============================================================= */
+html,body {
+  margin: 0;
+  padding: 4px 10px;
+}
+
+body {
+  background: lemonchiffon;
+  /* background: lightgray; */
+}
+
+::-webkit-scrollbar { /* width */
+  width: var(--scrollbar-width);
+}
+::-webkit-scrollbar-track { /* Track */
+  background: transparent;
+}
+::-webkit-scrollbar-thumb { /* Handle */
+  background: rgb(0,0,0,1);
+  background-clip: padding-box;
+  border-top: 0px solid transparent;
+  border-right: var(--scrollbar-right) solid transparent;
+  border-bottom: 0px solid transparent;
+  border-left: var(--scrollbar-left) solid transparent;
+}
+
+
+
+/* input, button {
+  padding: 0.5rem;
+  font-size: 1rem;
+} */
+
+#searchBtn {
+  background: none;
+  border: none;
+}
+
+#result {
+  margin-top: 1rem;
+}
+
+.list {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* align-items: baseline; */
+  border-bottom: 1px solid black;
+}

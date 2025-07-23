@@ -1,0 +1,96 @@
+/* font: import ================================================ */
+@font-face {
+  font-family: 'Menlo';
+  src: url('./font/Menlo-Regular_RadioClub.woff') format('woff');
+  src: url('./font/Menlo-Regular_RadioClub.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'AppleChancery';
+  src: url('./font/AppleChancery.woff') format('woff');
+}
+
+
+/* text: drag color ================================================ */
+::selection {
+  color: white;
+  text-shadow: 0 0px 6px yellow;
+  text-decoration: none;
+  /* color: #000000 !important;
+  background: #ffffff !important; */
+}
+
+/* Code for Firefox */
+::-moz-selection { 
+  color: white;
+  text-shadow: 0 0px 6px yellow;
+  text-decoration: none;
+  /* color: #000000 !important;
+  background: #ffffff !important; */
+}
+
+
+/* text: default ================================================ */
+html,body {
+  font-family: Arial, sans-serif; 
+  font-size: 13px;
+  color: #333;
+}
+
+
+button {
+  font-size: 13px;
+}
+
+a {
+  text-decoration: none;
+}
+
+h2 {
+  margin-block-start: 0;
+  margin-block-end: 36px;
+  font-family: AppleChancery;
+  font-size: 25px;
+  text-align: center;
+}
+
+h3 {
+  font-family: AppleChancery;
+  font-size: 17px;
+}
+
+p {
+  margin-block-start: 10px;
+  margin-block-end: 10px;
+}
+
+figcaption {
+  font-style: italic;
+  font-size: 12px;
+  color: #767676;
+}
+
+sup {
+  vertical-align: text-top;
+}
+
+
+ol {
+  margin-block-start: 100px;
+  /* margin-block-end: 1em; */
+  padding-inline-start: 20px;
+}
+
+li {
+  padding-bottom: 10px;
+}
+
+
+/* Material Symbols ================================================ */
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24
+}
