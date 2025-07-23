@@ -191,8 +191,12 @@ app.get("/playlist-tracks", (req, res) => {
 });
 
 
-
-const PORT = 8888;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log(`Listening on http://localhost:${PORT}`);
+  console.log(`✅ Listening on http://localhost:${PORT}`);
 });
+
+// const PORT = 8888;
+// app.listen(PORT, () => {
+//   console.log(`Listening on http://localhost:${PORT}`);
+// });

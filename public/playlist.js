@@ -151,28 +151,25 @@ window.onSpotifyWebPlaybackSDKReady = () => {
   let playlistUris = [];
   let currentTrackIndex = 0;
   let isPaused = true;
-  let pausedPositionMs = 0; // 현재 곡에서 멈춘 위치 (ms)
+  let pausedPositionMs = 0;
+  let lastTrackUri = null;
 
   player.addListener('ready', ({ device_id }) => {
     console.log("✅ Web Playback SDK 연결됨 (Device ID):", device_id);
     currentDeviceId = device_id;
   });
 
-  player.addListener('player_state_changed', state => {
-    if (!state) return;
-    const { position, duration, paused } = state;
+  player.addListener('player_state_changed', (state) => {
+    if (!state || !state.track_window?.current_track) return;
 
-    isPaused = paused;
-    if (paused) {
-      pausedPositionMs = position;  // 멈춘 위치 저장
-    } else {
-      pausedPositionMs = 0;  // 재생 중이면 위치 초기화 (실제로는 재생 중 위치도 저장 가능)
-    }
+    const { paused, position, duration, track_window } = state;
+    const currentTrackUri = track_window.current_track.uri;
 
-    // 곡 끝 감지 (position 거의 duration에 도달, 1초 전)
-    if (position >= duration - 1000 && !paused) {
+    highlightPlayingTrack(currentTrackUri);
+
+    // ✅ 트랙이 거의 끝났으면 다음 트랙 재생
+    if (!paused && position >= duration - 1000 && playlistUris.length > 0) {
       currentTrackIndex = (currentTrackIndex + 1) % playlistUris.length;
-      pausedPositionMs = 0; // 새 곡 시작이니까 위치 초기화
       playTrack(playlistUris[currentTrackIndex]);
     }
   });
@@ -207,6 +204,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       isPaused = false;
       pausedPositionMs = 0;
       console.log("🎵 재생 시작:", trackUri, "offset(ms):", offsetMs);
+
+      highlightPlayingTrack(trackUri);
     } catch (err) {
       alert("재생 중 오류: " + err.message);
     }
@@ -218,13 +217,10 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       return;
     }
     playlistUris = uris;
-    // 재생 중 일시중지 상태라면 멈춘 위치부터 재생, 아니면 처음부터
     if (isPaused && pausedPositionMs > 0) {
-      highlightPlayingTrack(playlistUris[currentTrackIndex]);
       playTrack(playlistUris[currentTrackIndex], pausedPositionMs);
     } else {
       currentTrackIndex = 0;
-      highlightPlayingTrack(playlistUris[currentTrackIndex]);
       playTrack(playlistUris[currentTrackIndex]);
     }
   };
@@ -260,7 +256,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       return;
     }
     currentTrackIndex = index;
-    pausedPositionMs = 0; // 특정 곡 선택 시 위치 초기화
+    pausedPositionMs = 0;
     playTrack(playlistUris[currentTrackIndex]);
   };
 };
@@ -328,11 +324,9 @@ function highlightPlayingTrack(trackUri) {
   document.querySelectorAll("[data-uri]").forEach(el => {
     el.classList.remove("playing");
   });
-
   const current = document.querySelector(`[data-uri="${trackUri}"]`);
   if (current) current.classList.add("playing");
-}
-
+} 
 
 // 초기 로드 시
 window.onload = () => {
