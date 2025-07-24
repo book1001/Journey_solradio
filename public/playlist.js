@@ -159,20 +159,45 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     currentDeviceId = device_id;
   });
 
+  let isAdvancing = false;
+
   player.addListener('player_state_changed', (state) => {
     if (!state || !state.track_window?.current_track) return;
 
     const { paused, position, duration, track_window } = state;
     const currentTrackUri = track_window.current_track.uri;
 
+    console.log("🎧 상태 변경 감지:", currentTrackUri, "position:", position, "paused:", paused);
+
     highlightPlayingTrack(currentTrackUri);
 
-    // ✅ 트랙이 거의 끝났으면 다음 트랙 재생
-    if (!paused && position >= duration - 1000 && playlistUris.length > 0) {
+    // 🔒 이미 다음 곡으로 넘어가는 중이면 중복 실행 방지
+    if (isAdvancing) return;
+
+    const songEnded = paused && position === 0;
+
+    if (songEnded && playlistUris.length > 0) {
+      isAdvancing = true; // 🔒 다음 곡 전환 중
+
       currentTrackIndex = (currentTrackIndex + 1) % playlistUris.length;
-      playTrack(playlistUris[currentTrackIndex]);
+      const nextTrack = playlistUris[currentTrackIndex];
+      lastTrackUri = nextTrack;
+
+      console.log("⏭ 다음 곡 재생:", nextTrack, "index:", currentTrackIndex);
+
+      playTrack(nextTrack).then(() => {
+        isAdvancing = false; // ✅ 전환 완료 후 해제
+      }).catch(err => {
+        console.error("다음 곡 재생 실패:", err);
+        isAdvancing = false;
+      });
+    } else {
+      lastTrackUri = currentTrackUri;
     }
   });
+
+
+
 
   player.connect();
 
@@ -181,6 +206,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       alert("플레이어가 준비되지 않았습니다.");
       return;
     }
+
+    console.log("🎵 재생 시작:", trackUri, "index:", currentTrackIndex);
 
     try {
       const body = offsetMs > 0 
@@ -210,20 +237,13 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       alert("재생 중 오류: " + err.message);
     }
   }
-
+  
   window.playAllTracks = (uris) => {
-    if (!Array.isArray(uris) || uris.length === 0) {
-      alert("재생할 곡이 없습니다.");
-      return;
-    }
     playlistUris = uris;
-    if (isPaused && pausedPositionMs > 0) {
-      playTrack(playlistUris[currentTrackIndex], pausedPositionMs);
-    } else {
-      currentTrackIndex = 0;
-      playTrack(playlistUris[currentTrackIndex]);
-    }
+    currentTrackIndex = 0;
+    playTrack(playlistUris[currentTrackIndex]);
   };
+
 
   window.pauseTrack = async () => {
     if (!currentDeviceId) {
@@ -321,12 +341,19 @@ function loadPlaylistTracks() {
 
 // 현재 곡 강조하는 함수
 function highlightPlayingTrack(trackUri) {
+  const currentlyPlayingEl = document.querySelector(".playing");
+  const currentHighlightedUri = currentlyPlayingEl?.getAttribute("data-uri");
+
+  if (currentHighlightedUri === trackUri) return; // 🛑 이미 강조된 곡이면 무시
+
   document.querySelectorAll("[data-uri]").forEach(el => {
     el.classList.remove("playing");
   });
+
   const current = document.querySelector(`[data-uri="${trackUri}"]`);
   if (current) current.classList.add("playing");
-} 
+}
+
 
 // 초기 로드 시
 window.onload = () => {

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Thermal Print Test</title>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <style>
+    #printArea {
+      width: 250px;
+      padding: 10px;
+      font-family: sans-serif;
+      background: #fff;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div id="printArea">
+    <h3>Hello Printer 👋</h3>
+    <p>This is a test of printing a div to a thermal printer.</p>
+  </div>
+  <button onclick="printDivToThermal()">Print to Thermal Printer</button>
+
+  <script>
+    async function printDivToThermal() {
+      const div = document.getElementById('printArea');
+
+      const canvas = await html2canvas(div, { backgroundColor: '#ffffff' });
+      const imageData = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
+      const bwBitmap = convertToMonoBitmap(imageData); // ESC/POS 프린터용 흑백 비트맵 변환
+
+      try {
+        const port = await navigator.serial.requestPort();
+        await port.open({ baudRate: 9600 });
+
+        const writer = port.writable.getWriter();
+        await writer.write(new Uint8Array([27, 64])); // ESC @ 초기화
+
+        const escposImage = buildRasterBitImage(bwBitmap, canvas.width);
+        await writer.write(escposImage);
+
+        await writer.write(new Uint8Array([10, 10, 10])); // 줄 바꿈
+        writer.releaseLock();
+        await port.close();
+      } catch (err) {
+        console.error("Failed to print:", err);
+        alert("프린터 연결에 실패했습니다. USB로 연결되어 있는지 확인하세요.");
+      }
+    }
+
+    // 1비트 흑백으로 변환
+    function convertToMonoBitmap(imageData) {
+      const width = imageData.width;
+      const height = imageData.height;
+      const data = imageData.data;
+      const bitmap = [];
+
+      for (let y = 0; y < height; y++) {
+        const row = [];
+        for (let x = 0; x < width; x++) {
+          const i = (y * width + x) * 4;
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          const brightness = 0.3 * r + 0.59 * g + 0.11 * b;
+          row.push(brightness < 128 ? 1 : 0); // 검은 점: 1
+        }
+        bitmap.push(row);
+      }
+      return bitmap;
+    }
+
+    // ESC * raster bit image 명령 생성
+    function buildRasterBitImage(bitmap, width) {
+      const bytesPerLine = Math.ceil(width / 8);
+      const buffer = [];
+
+      // GS v 0 명령어 (raster bitmap)
+      buffer.push(29, 118, 48, 0); // GS v 0 m
+      buffer.push(bytesPerLine & 0xFF, (bytesPerLine >> 8) & 0xFF); // xL, xH
+      buffer.push(bitmap.length & 0xFF, (bitmap.length >> 8) & 0xFF); // yL, yH
+
+      for (let y = 0; y < bitmap.length; y++) {
+        for (let x = 0; x < bytesPerLine; x++) {
+          let byte = 0;
+          for (let b = 0; b < 8; b++) {
+            const pixel = bitmap[y][x * 8 + b] || 0;
+            byte |= pixel << (7 - b);
+          }
+          buffer.push(byte);
+        }
+      }
+
+      return new Uint8Array(buffer);
+    }
+  </script>
+</body>
+</html>

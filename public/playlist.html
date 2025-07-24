@@ -19,6 +19,18 @@
   <button id="searchBtn">Search</button>
   <div id="result"></div>
 
+  <div id="printable">
+    <h3>🎉 Shared Playlist</h3>
+    <ul>
+      <li>01. Song Title - Artist</li>
+      <li>02. Another Song - Artist</li>
+      <!-- 추가 항목 -->
+    </ul>
+  </div>
+
+  <button onclick="printToThermalPrinter()">🖨️ 프린트</button>
+
+
   <h2>🎵 Shared Playlist Tracks</h2>
   <a href="/login" id="loginBtn">Spotify 로그인</a>
   <button id="playAllBtn">전체 재생</button>
@@ -31,5 +43,46 @@
   <!-- ====================================================== -->
   <script src="https://sdk.scdn.co/spotify-player.js"></script>
   <script src="playlist.js"></script>
+
+  <script>
+    async function printToThermalPrinter() {
+      const text = extractPrintableText();
+      const encoder = new TextEncoder();
+
+      try {
+        // Bluetooth 연결
+        const device = await navigator.bluetooth.requestDevice({
+          filters: [{ namePrefix: "Printer" }], // 필요 시 변경
+          optionalServices: [0xFF00] // ESC/POS 대부분 여기에 있음
+        });
+
+        const server = await device.gatt.connect();
+        const service = await server.getPrimaryService(0xFF00);
+        const characteristic = await service.getCharacteristic(0xFF01);
+
+        // ESC/POS 명령어 + 텍스트 생성
+        const escInit = Uint8Array.from([0x1B, 0x40]); // 프린터 초기화
+        const content = encoder.encode(text + "\n\n\n");
+
+        // 데이터 전송
+        await characteristic.writeValue(escInit);
+        await characteristic.writeValue(content);
+        alert("✅ 프린트 완료");
+
+      } catch (err) {
+        console.error("프린트 실패:", err);
+        alert("❌ 프린트 오류: " + err.message);
+      }
+    }
+
+    // div에서 텍스트 추출
+    function extractPrintableText() {
+      const div = document.getElementById("printable");
+      let text = div.innerText || div.textContent || "";
+      text = text.replace(/\n+/g, "\n"); // 줄바꿈 정리
+      return text.trim();
+    }
+    </script>
+
 </body>
 </html>
