@@ -248,48 +248,48 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
 
   window.resumeTrack = async () => {
-    const trackUri = playlistUris[currentTrackIndex];
-    if (!trackUri) {
+    const android = isAndroid();
+    const uris = playlistUris;
+    const index = currentTrackIndex;
+
+    if (!uris || uris.length === 0 || index < 0) {
       alert("재생할 트랙이 없습니다.");
       return;
     }
 
+    const body = {
+      uris: uris,
+      offset: { position: index },
+      position_ms: pausedPositionMs
+    };
+
+    const url = android
+      ? "https://api.spotify.com/v1/me/player/play"
+      : `https://api.spotify.com/v1/me/player/play?device_id=${currentDeviceId}`;
+
     try {
-      const stateRes = await fetch("https://api.spotify.com/v1/me/player", {
+      const res = await fetch(url, {
+        method: "PUT",
         headers: {
+          "Content-Type": "application/json",
           "Authorization": `Bearer ${sessionStorage.getItem("access_token")}`,
         },
+        body: JSON.stringify(body),
       });
-      const state = await stateRes.json();
-      const currentUri = state?.item?.uri;
 
-      // 트랙이 다르면 다시 playTrack 사용
-      if (currentUri !== trackUri) {
-        await playTrack(trackUri, pausedPositionMs);
-        return;
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error("재생 실패: " + errorText);
       }
 
-      // ✅ 1. 먼저 멈춘 위치로 seek
-      await fetch(`https://api.spotify.com/v1/me/player/seek?position_ms=${pausedPositionMs}`, {
-        method: "PUT",
-        headers: {
-          "Authorization": `Bearer ${sessionStorage.getItem("access_token")}`,
-        },
-      });
+      console.log(`▶ 이어서 전체 재생: index=${index}, position=${pausedPositionMs}`);
+      if (android) startPollingPlayerState();
 
-      // ✅ 2. 그 다음 resume
-      await fetch("https://api.spotify.com/v1/me/player/play", {
-        method: "PUT",
-        headers: {
-          "Authorization": `Bearer ${sessionStorage.getItem("access_token")}`,
-        },
-      });
-
-      console.log("▶ 이어서 재생 (seek 후 resume):", trackUri, pausedPositionMs);
     } catch (err) {
-      alert("이어 재생 중 오류: " + err.message);
+      alert("이어 재생 실패: " + err.message);
     }
   };
+
 
 
 
