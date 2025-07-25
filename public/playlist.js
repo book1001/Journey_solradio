@@ -237,7 +237,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       highlightPlayingTrack(trackUri);
 
       if (android) {
-        startPollingPlayerState();
+        stopPollingPlayerState(); // 중복 방지
+        startPollingPlayerState(); // 다시 시작
       }
 
     } catch (err) {
