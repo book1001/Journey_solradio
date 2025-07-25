@@ -209,9 +209,10 @@ window.onSpotifyWebPlaybackSDKReady = () => {
   async function playTrack(trackUri, offsetMs = 0) {
     const android = isAndroid();
 
-    const body = offsetMs > 0
-      ? { uris: [trackUri], position_ms: offsetMs }
-      : { uris: [trackUri] };
+    const body = {
+      uris: [trackUri],
+      position_ms: offsetMs // 항상 명시적으로 지정
+    };
 
     const url = android
       ? `https://api.spotify.com/v1/me/player/play`
@@ -232,19 +233,64 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         throw new Error("재생 실패: " + err);
       }
 
-      console.log(`🎵 재생 시작: ${trackUri} on ${android ? "Android (Spotify Connect)" : "Web SDK"}`);
+      console.log(`🎵 재생 시작: ${trackUri} (position_ms: ${offsetMs})`);
 
       highlightPlayingTrack(trackUri);
 
       if (android) {
-        stopPollingPlayerState(); // 중복 방지
-        startPollingPlayerState(); // 다시 시작
+        startPollingPlayerState();
       }
 
     } catch (err) {
       alert("재생 중 오류: " + err.message);
     }
   }
+
+
+  window.resumeTrack = async () => {
+    const trackUri = playlistUris[currentTrackIndex];
+    if (!trackUri) {
+      alert("재생할 트랙이 없습니다.");
+      return;
+    }
+
+    try {
+      const stateRes = await fetch("https://api.spotify.com/v1/me/player", {
+        headers: {
+          "Authorization": `Bearer ${sessionStorage.getItem("access_token")}`,
+        },
+      });
+      const state = await stateRes.json();
+      const currentUri = state?.item?.uri;
+
+      // 트랙이 다르면 다시 playTrack 사용
+      if (currentUri !== trackUri) {
+        await playTrack(trackUri, pausedPositionMs);
+        return;
+      }
+
+      // ✅ 1. 먼저 멈춘 위치로 seek
+      await fetch(`https://api.spotify.com/v1/me/player/seek?position_ms=${pausedPositionMs}`, {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${sessionStorage.getItem("access_token")}`,
+        },
+      });
+
+      // ✅ 2. 그 다음 resume
+      await fetch("https://api.spotify.com/v1/me/player/play", {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${sessionStorage.getItem("access_token")}`,
+        },
+      });
+
+      console.log("▶ 이어서 재생 (seek 후 resume):", trackUri, pausedPositionMs);
+    } catch (err) {
+      alert("이어 재생 중 오류: " + err.message);
+    }
+  };
+
 
 
   window.playAllTracks = (uris) => {
@@ -299,15 +345,26 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       : `https://api.spotify.com/v1/me/player/pause?device_id=${currentDeviceId}`;
 
     try {
+      // 현재 위치 저장
+      const res = await fetch("https://api.spotify.com/v1/me/player", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      pausedPositionMs = data.progress_ms || 0; // 👉 저장!
+      
       await fetch(url, {
         method: "PUT",
         headers: { "Authorization": `Bearer ${token}` },
       });
-      console.log("⏸ 일시 중지");
+
+      console.log("⏸ 일시 중지 @", pausedPositionMs);
     } catch (err) {
       alert("일시 중지 실패: " + err.message);
     }
   };
+
 
   window.stopTrack = async () => {
     await window.pauseTrack();
@@ -389,24 +446,48 @@ function stopPollingPlayerState() {
 
 // ==========================================================================================
 
+let isPlaying = false;
+let playlistLoaded = false;
+
 document.getElementById("playAllBtn").addEventListener("click", async () => {
   try {
-    const res = await fetchWithRetry("/playlist-tracks");
+    if (!playlistLoaded) {
+      const res = await fetchWithRetry("/playlist-tracks");
+      if (!res.ok) throw new Error("재생목록 불러오기 실패");
 
-    if (!res.ok) throw new Error("재생목록 불러오기 실패");
+      const items = await res.json();
+      const uris = items.map(item => item.track?.uri).filter(Boolean);
+      if (!uris.length) {
+        alert("재생 가능한 곡이 없습니다.");
+        return;
+      }
 
-    const items = await res.json();
-    const uris = items.map(item => item.track?.uri).filter(Boolean);
-    if (!uris.length) {
-      alert("재생 가능한 곡이 없습니다.");
+      window.playAllTracks(uris); // 🔁 전체 재생 시작
+      isPlaying = true;
+      playlistLoaded = true;
+      updatePlayAllButtonText();
       return;
     }
 
-    window.playAllTracks(uris);
+    if (isPlaying) {
+      await window.pauseTrack();     // 🔁 일시정지
+      isPlaying = false;
+    } else {
+      window.resumeTrack();          // 🔁 이어서 재생
+      isPlaying = true;
+    }
+
+    updatePlayAllButtonText();
+
   } catch (e) {
     alert("재생 실패: " + e.message);
   }
 });
+
+function updatePlayAllButtonText() {
+  const btn = document.getElementById("playAllBtn");
+  btn.textContent = isPlaying ? "⏸ Pause" : "▶ Play";
+}
 
 
 document.getElementById("pauseBtn").addEventListener("click", () => {
