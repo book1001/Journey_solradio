@@ -260,7 +260,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     const body = {
       uris: uris,
       offset: { position: index },
-      position_ms: pausedPositionMs
+      position_ms: pausedPositionMs,
     };
 
     const url = android
@@ -289,6 +289,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       alert("이어 재생 실패: " + err.message);
     }
   };
+
 
 
 
@@ -413,8 +414,16 @@ function startPollingPlayerState() {
       const position = data.progress_ms;
       const duration = data.item?.duration_ms;
       const paused = data.is_playing === false;
-
-      highlightPlayingTrack(currentTrackUri);
+      
+      if (currentTrackUri && playlistUris.includes(currentTrackUri)) {
+        const index = playlistUris.indexOf(currentTrackUri);
+        if (index !== -1) {
+          currentTrackIndex = index;
+          highlightPlayingTrack(currentTrackUri); // ✅ 이 시점에 하이라이트
+        }
+      } else {
+        console.warn("🔎 현재 트랙이 플레이리스트에 없습니다:", currentTrackUri);
+      }
 
       // ✅ 현재 재생 중인 곡의 인덱스 추적
       const newIndex = playlistUris.indexOf(currentTrackUri);
