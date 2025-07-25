@@ -1,3 +1,7 @@
+function isAndroid() {
+  return /Android/i.test(navigator.userAgent);
+}
+
 async function fetchWithRetry(url, options = {}) {
   let token = sessionStorage.getItem("access_token");
   if (!token) throw new Error("로그인이 필요합니다.");
@@ -48,7 +52,7 @@ async function searchTracks() {
     tracks.forEach(track => {
       const div = document.createElement("div");
       div.innerHTML = `
-        <img src="${track.album.images[2]?.url || ''}" alt="album cover" />
+        <!-- <img src="${track.album.images[2]?.url || ''}" alt="album cover" /> -->
         <div class="track-info">
           <p><strong>${track.name}</strong></p>
           <p>${track.artists.map(a => a.name).join(", ")}</p>
@@ -106,7 +110,7 @@ async function loadPlaylistTracks() {
       div.classList.add("track-item");
       div.setAttribute("data-uri", track.uri);
       div.innerHTML = `
-        <img src="${track.album.images[2]?.url || ''}" alt="album cover" />
+        <!-- <img src="${track.album.images[2]?.url || ''}" alt="album cover" /> -->
         <div class="track-info">
           <p><strong>${track.name}</strong></p>
           <p>${track.artists.map(a => a.name).join(", ")}</p>
@@ -201,20 +205,58 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
   player.connect();
 
-  async function playTrack(trackUri, offsetMs = 0) {
-    if (!currentDeviceId) {
-      alert("플레이어가 준비되지 않았습니다.");
-      return;
-    }
+  // async function playTrack(trackUri, offsetMs = 0) {
+  //   if (!currentDeviceId) {
+  //     alert("플레이어가 준비되지 않았습니다.");
+  //     return;
+  //   }
 
-    console.log("🎵 재생 시작:", trackUri, "index:", currentTrackIndex);
+  //   console.log("🎵 재생 시작:", trackUri, "index:", currentTrackIndex);
+
+  //   try {
+  //     const body = offsetMs > 0 
+  //       ? { uris: [trackUri], position_ms: offsetMs }
+  //       : { uris: [trackUri] };
+
+  //     const res = await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${currentDeviceId}`, {
+  //       method: "PUT",
+  //       body: JSON.stringify(body),
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         "Authorization": `Bearer ${token}`,
+  //       },
+  //     });
+
+  //     if (!res.ok) {
+  //       const err = await res.text();
+  //       throw new Error("재생 실패: " + err);
+  //     }
+
+  //     isPaused = false;
+  //     pausedPositionMs = 0;
+  //     console.log("🎵 재생 시작:", trackUri, "offset(ms):", offsetMs);
+
+  //     highlightPlayingTrack(trackUri);
+  //   } catch (err) {
+  //     alert("재생 중 오류: " + err.message);
+  //   }
+  // }
+
+  async function playTrack(trackUri, offsetMs = 0) {
+    const android = isAndroid();
+
+    const body = offsetMs > 0
+      ? { uris: [trackUri], position_ms: offsetMs }
+      : { uris: [trackUri] };
+
+    const url = android
+      ? `https://api.spotify.com/v1/me/player/play`
+      : `https://api.spotify.com/v1/me/player/play?device_id=${currentDeviceId}`;
+
+    console.log(`🎵 재생 시작: ${trackUri} on ${android ? "Android (Spotify Connect)" : "Web Playback SDK"}`);
 
     try {
-      const body = offsetMs > 0 
-        ? { uris: [trackUri], position_ms: offsetMs }
-        : { uris: [trackUri] };
-
-      const res = await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${currentDeviceId}`, {
+      const res = await fetch(url, {
         method: "PUT",
         body: JSON.stringify(body),
         headers: {
@@ -230,14 +272,14 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
       isPaused = false;
       pausedPositionMs = 0;
-      console.log("🎵 재생 시작:", trackUri, "offset(ms):", offsetMs);
-
       highlightPlayingTrack(trackUri);
+
     } catch (err) {
       alert("재생 중 오류: " + err.message);
     }
   }
-  
+
+
   window.playAllTracks = (uris) => {
     playlistUris = uris;
     currentTrackIndex = 0;
@@ -325,7 +367,7 @@ function loadPlaylistTracks() {
         div.setAttribute("data-uri", track.uri); 
 
         div.innerHTML = `
-          <img src="${track.album.images[2]?.url || ''}" alt="album cover" />
+          <!-- <img src="${track.album.images[2]?.url || ''}" alt="album cover" /> -->
           <div class="track-info">
             <p><strong>${track.name}</strong></p>
             <p>${track.artists.map(a => a.name).join(", ")}</p>
