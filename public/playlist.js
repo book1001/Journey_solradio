@@ -247,14 +247,50 @@ window.onSpotifyWebPlaybackSDKReady = () => {
   }
 
 
-  window.resumeTrack = () => {
+  window.resumeTrack = async () => {
     const trackUri = playlistUris[currentTrackIndex];
     if (!trackUri) {
       alert("재생할 트랙이 없습니다.");
       return;
     }
-    playTrack(trackUri, pausedPositionMs); // 🟢 정확히 중단된 지점부터 재생
+
+    try {
+      const stateRes = await fetch("https://api.spotify.com/v1/me/player", {
+        headers: {
+          "Authorization": `Bearer ${sessionStorage.getItem("access_token")}`,
+        },
+      });
+      const state = await stateRes.json();
+      const currentUri = state?.item?.uri;
+
+      // 트랙이 다르면 다시 playTrack 사용
+      if (currentUri !== trackUri) {
+        await playTrack(trackUri, pausedPositionMs);
+        return;
+      }
+
+      // ✅ 1. 먼저 멈춘 위치로 seek
+      await fetch(`https://api.spotify.com/v1/me/player/seek?position_ms=${pausedPositionMs}`, {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${sessionStorage.getItem("access_token")}`,
+        },
+      });
+
+      // ✅ 2. 그 다음 resume
+      await fetch("https://api.spotify.com/v1/me/player/play", {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${sessionStorage.getItem("access_token")}`,
+        },
+      });
+
+      console.log("▶ 이어서 재생 (seek 후 resume):", trackUri, pausedPositionMs);
+    } catch (err) {
+      alert("이어 재생 중 오류: " + err.message);
+    }
   };
+
 
 
   window.playAllTracks = (uris) => {
@@ -456,13 +492,13 @@ function updatePlayAllButtonText() {
 }
 
 
-document.getElementById("pauseBtn").addEventListener("click", () => {
-  window.pauseTrack();
-});
+// document.getElementById("pauseBtn").addEventListener("click", () => {
+//   window.pauseTrack();
+// });
 
-document.getElementById("stopBtn").addEventListener("click", () => {
-  window.stopTrack();
-});
+// document.getElementById("stopBtn").addEventListener("click", () => {
+//   window.stopTrack();
+// });
 
 // 재생목록에서 특정 곡 클릭 시
 function loadPlaylistTracks() {
