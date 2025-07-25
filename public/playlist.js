@@ -250,8 +250,46 @@ window.onSpotifyWebPlaybackSDKReady = () => {
   window.playAllTracks = (uris) => {
     playlistUris = uris;
     currentTrackIndex = 0;
-    playTrack(playlistUris[currentTrackIndex]);
+
+    const android = isAndroid();
+
+    if (android) {
+      stopPollingPlayerState(); // 중복 방지
+      playPlaylistOnAndroid(playlistUris, currentTrackIndex);
+    } else {
+      playTrack(playlistUris[currentTrackIndex]);
+    }
   };
+
+
+  async function playPlaylistOnAndroid(uris, index = 0) {
+    try {
+      const res = await fetch("https://api.spotify.com/v1/me/player/play", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${sessionStorage.getItem("access_token")}`,
+        },
+        body: JSON.stringify({
+          uris: uris,
+          offset: { position: index },
+          position_ms: 0,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error("재생 실패: " + errorText);
+      }
+
+      console.log("▶️ Android용 전체 재생 시작됨");
+      startPollingPlayerState(); // 자동 재생 추적 시작
+
+    } catch (err) {
+      alert("Android 재생 중 오류: " + err.message);
+    }
+  }
+
 
 
   window.pauseTrack = async () => {
@@ -286,9 +324,14 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       return;
     }
     currentTrackIndex = index;
-    pausedPositionMs = 0;
-    playTrack(playlistUris[currentTrackIndex]);
+
+    if (isAndroid()) {
+      playPlaylistOnAndroid(playlistUris, currentTrackIndex);
+    } else {
+      playTrack(playlistUris[currentTrackIndex]);
+    }
   };
+
 };
 
 
@@ -302,7 +345,7 @@ function startPollingPlayerState() {
     try {
       const res = await fetch("https://api.spotify.com/v1/me/player", {
         headers: {
-          "Authorization": `Bearer ${token}`,
+          "Authorization": `Bearer ${sessionStorage.getItem("access_token")}`,
         },
       });
 
@@ -316,20 +359,25 @@ function startPollingPlayerState() {
 
       highlightPlayingTrack(currentTrackUri);
 
-      const songEnded = paused && position < 1000;
+      // ✅ 현재 재생 중인 곡의 인덱스 추적
+      const newIndex = playlistUris.indexOf(currentTrackUri);
+      if (newIndex >= 0) {
+        currentTrackIndex = newIndex;
+      }
 
-      if (songEnded) {
-        // 다음 곡 재생
-        currentTrackIndex = (currentTrackIndex + 1) % playlistUris.length;
-        const nextTrack = playlistUris[currentTrackIndex];
-        console.log("⏭ Android - 다음 곡 재생:", nextTrack);
-        await playTrack(nextTrack);
+      // ✅ 다음 곡으로 자동 전환
+      const songEnded = paused && position < 1000;
+      if (songEnded && playlistUris.length > 0) {
+        const nextIndex = (currentTrackIndex + 1) % playlistUris.length;
+        console.log("⏭ Android 다음 곡으로:", playlistUris[nextIndex]);
+        currentTrackIndex = nextIndex;
+        await playPlaylistOnAndroid(playlistUris, nextIndex);
       }
 
     } catch (err) {
-      console.warn("🎧 안드로이드 상태 폴링 실패:", err.message);
+      console.warn("🎧 Android 상태 확인 실패:", err.message);
     }
-  }, 2000); // 2초마다 상태 확인
+  }, 2000);
 }
 
 function stopPollingPlayerState() {
