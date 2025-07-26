@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="font.css">
   <link rel="stylesheet" href="tv.css">
   <style>
-    @media print {
+
       html, body {
         margin: 0;
         padding: 0;
@@ -33,12 +33,6 @@
         display: none;
       }
       .lyrics {
-        display: none;
-      }
-      .noise {
-        display: none;
-      }
-      .Block_description {
         display: none;
       }
       #targetArea, #targetArea * {
@@ -60,7 +54,14 @@
         max-width: 384px;
         overflow: hidden;
       }
-    }
+
+      .noise {
+        display: none !important;
+      }
+      .Block_description {
+        display: none !important;
+      }
+   
   </style>
 </head>
 
