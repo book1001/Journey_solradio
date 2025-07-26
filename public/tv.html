@@ -2,48 +2,67 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Print Only One Image</title>
+  <title>Print #printed only</title>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <style>
-    body {
-      font-family: sans-serif;
+    html, body {
+      margin: 0;
+      padding: 0;
+    } 
+    #printed {
+      width: 384px;
+      height: 912px;
+      border: 20px solid black;
+      box-sizing: border-box;
     }
 
-    /* 일반 화면에서는 모두 보이도록 */
-    .hidden-print {
-      display: block;
+    #previewCanvas {
+      display: none;
     }
 
-    /* 프린트 시점 */
     @media print {
-      /* 기본적으로 모두 숨기기 */
       body * {
         display: none !important;
       }
-
-      /* 지정 이미지만 표시 */
-      img[src="img/PHO00014.jpg"] {
+      #previewCanvas {
         display: block !important;
         position: absolute;
         top: 0;
         left: 0;
-        height: 384px; /* 감열 프린터용 (58mm) */
-        transform: rotate(90deg);
       }
     }
   </style>
 </head>
 <body>
 
-  <h1 class="hidden-print">웹사이트 헤더</h1>
-  <p class="hidden-print">이 내용은 인쇄되지 않습니다.</p>
+  <div id="printed">
+    <p>이 영역만 출력됩니다.</p>
+    <img src="img/PHO00014.jpg" style="width:100%;">
+  </div>
 
-  <!-- ✅ 인쇄할 이미지 -->
-  <img src="img/PHO00014.jpg" alt="Print me only">
+  <canvas id="previewCanvas" width="384" height="912"></canvas>
 
-  <!-- ❌ 인쇄하지 않을 이미지 -->
-  <img src="img/another.jpg" alt="Other Image">
+  <button onclick="captureAndPrint()">프린트하기</button>
 
-  <button onclick="window.print()">프린트하기</button>
+  <script>
+    function captureAndPrint() {
+      const target = document.getElementById('printed');
+      const canvas = document.getElementById('previewCanvas');
+
+      html2canvas(target, {
+        width: 384,
+        height: 912,
+        scale: 1
+      }).then(capturedCanvas => {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(capturedCanvas, 0, 0, 384, 912);
+        setTimeout(() => {
+          window.print();
+        }, 300); // 인쇄 직전에 렌더링 완료 대기
+      });
+    }
+  </script>
 
 </body>
 </html>
