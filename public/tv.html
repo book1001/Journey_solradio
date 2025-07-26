@@ -16,23 +16,24 @@
   <link rel="stylesheet" href="tv.css">
   <style>
     @media print {
-  body * {
-    visibility: hidden; /* 모두 숨기기 */
-  }
-  #targetArea, #targetArea * {
-    visibility: visible; /* targetArea와 자식은 보이게 */
-  }
-  #targetArea {
-    position: absolute;
-    left: 0;
-    top: 0;
-  }
-}
+      #btn_print {
+        display: none;
+      }
+      .TV-container {
+        display: none;
+      }
+      .lyrics {
+        display: none;
+      }
+      .noise {
+        display: none;
+      }
+    }
   </style>
 </head>
 
 <body>
-  <button onclick="printTarget()">프린트하기</button>
+  <button id="btn_print" onclick="printTarget()">프린트하기</button>
   <!-- ======================================================= -->
   <!-- TV: Container -->
   <!-- ======================================================= -->
@@ -72,6 +73,12 @@
 
   <script>
     function printTarget() {
+      window.print();
+    }
+  </script>
+
+  <!-- <script>
+    function printTarget() {
       const target = document.getElementById("targetArea");
       const printWindow = window.open('', '', 'width=600,height=400');
 
@@ -110,7 +117,7 @@
       printWindow.document.close();
     }
 
-  </script>
+  </script> -->
 </body>
   
 </html>
