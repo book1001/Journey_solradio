@@ -16,23 +16,18 @@
   <link rel="stylesheet" href="tv.css">
   <style>
     @media print {
-      * {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        color-adjust: exact !important;
-      }
-      body * {
-        visibility: hidden; /* 모두 숨기기 */
-      }
-      #targetArea, #targetArea * {
-        visibility: visible; /* targetArea와 자식은 보이게 */
-      }
-      #targetArea {
-        position: absolute;
-        left: 0;
-        top: 0;
-      }
-    }
+  body * {
+    visibility: hidden; /* 모두 숨기기 */
+  }
+  #targetArea, #targetArea * {
+    visibility: visible; /* targetArea와 자식은 보이게 */
+  }
+  #targetArea {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}
   </style>
 </head>
 
@@ -78,19 +73,22 @@
   <script>
 function printTarget() {
   const target = document.getElementById("targetArea");
-  const printWindow = window.open('', '', 'width=600,height=400');
+  const printWindow = window.open('', '', 'width=800,height=600');
 
   printWindow.document.write(`
     <html>
       <head>
         <title>Print Preview</title>
         <style>
-          html,body { 
+          html, body {
             margin: 0;
             padding: 0;
+            background: white;
           }
           img {
             width: 100%;
+            height: auto;
+            display: block;
           }
           .noise {
             display: none;
@@ -100,12 +98,68 @@ function printTarget() {
       <body>
         ${target.outerHTML}
         <script>
-          window.onload = function() {
-            window.focus();
-            window.print();
-            // 사용자가 인쇄 완료 후 창을 직접 닫도록 안내 (팝업 자동 닫기 대신)
-            // 또는 아래 주석 해제 시 1초 후 자동 닫기 시도 가능
-            // setTimeout(() => window.close(), 1000);
+          function applyDotDither(imgElement) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.src = imgElement.src;
+
+            img.onload = function () {
+              const scale = 5;
+              const width = img.width;
+              const height = img.height;
+              canvas.width = width;
+              canvas.height = height;
+
+              ctx.drawImage(img, 0, 0, width, height);
+              const imageData = ctx.getImageData(0, 0, width, height);
+              const data = imageData.data;
+
+              ctx.clearRect(0, 0, width, height);
+              ctx.fillStyle = "black";
+
+              for (let y = 0; y < height; y += scale) {
+                for (let x = 0; x < width; x += scale) {
+                  const index = (y * width + x) * 4;
+                  const r = data[index];
+                  const g = data[index + 1];
+                  const b = data[index + 2];
+                  const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+                  const radius = (1 - brightness / 255) * (scale / 2);
+
+                  ctx.beginPath();
+                  ctx.arc(x, y, radius, 0, Math.PI * 2);
+                  ctx.fill();
+                }
+              }
+
+              const newImg = new Image();
+              newImg.src = canvas.toDataURL();
+              newImg.width = img.width;
+              newImg.height = img.height;
+              imgElement.replaceWith(newImg);
+            };
+          }
+
+          window.onload = function () {
+            const images = document.querySelectorAll('#targetArea img');
+            if (images.length === 0) {
+              window.print();
+              setTimeout(() => window.close(), 1000);
+            }
+
+            let processedCount = 0;
+            images.forEach((img) => {
+              applyDotDither(img);
+              img.onload = () => {
+                processedCount++;
+                if (processedCount === images.length) {
+                  window.print();
+                  setTimeout(() => window.close(), 1000);
+                }
+              };
+            });
           };
         <\/script>
       </body>
@@ -114,6 +168,7 @@ function printTarget() {
 
   printWindow.document.close();
 }
+
 
   </script>
 </body>
