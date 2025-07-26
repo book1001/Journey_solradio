@@ -17,7 +17,7 @@
 
     #printed {
       width: 100%;
-      border: 10px solid black;
+      /* border: 10px solid black; */
     }
 
     @media print {
@@ -36,19 +36,6 @@
         width: 656px;
         height: 1310px;
       }
-
-      .d1 {
-        width: 656px;
-      }
-      .d2 {
-        width: 100%;
-      }
-      .d3 {
-        width: 56mm;
-      }
-      .d4 {
-        width: 58mm;
-      }
     }
   </style>
 </head>
@@ -56,7 +43,6 @@
   <div id="printed">
     <h2>Sol–Ra☀︎dio</h2>
     <img class="dithered d1" src="img/PHO00014.jpg">
-    <img class="dithered d2" src="img/PHO00014.jpg">
 
   </div>
 
@@ -64,7 +50,7 @@
   
   <script>
     function floydSteinbergDither(image, callback) {
-      const targetWidth = 384;
+      const targetWidth = 500;
       const scale = targetWidth / image.width;
       const targetHeight = Math.floor(image.height * scale);
 
