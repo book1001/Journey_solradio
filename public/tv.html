@@ -37,23 +37,36 @@
         height: 1310px;
       }
 
-      #dithered {
-        width: 656px;
+      .d1 {
+        width: 46mm;
+      }
+      .d2 {
+        width: 48mm;
+      }
+      .d3 {
+        width: 56mm;
+      }
+      .d4 {
+        width: 58mm;
       }
     }
   </style>
 </head>
 <body>
   <div id="printed">
-    <h2>Sol–Ra.dio</h2>
-    <img id="dithered" src="img/PHO00014.jpg">
+    <h2>Sol–Ra☀︎dio</h2>
+    <img class="dithered d1" src="img/PHO00014.jpg">
+    <img class="dithered d2" src="img/PHO00014.jpg">
+    <img class="dithered d3" src="img/PHO00014.jpg">
+    <img class="dithered d4" src="img/PHO00014.jpg">
+
   </div>
 
   <button onclick="window.print()">🖨 프린트하기</button>
   
   <script>
     function floydSteinbergDither(image, callback) {
-      const targetWidth = 656;
+      const targetWidth = 384;
       const scale = targetWidth / image.width;
       const targetHeight = Math.floor(image.height * scale);
 
@@ -102,17 +115,19 @@
     }
 
     window.onload = function () {
-      const img = document.getElementById('dithered');
-      const originalSrc = img.src;
-      const image = new Image();
-      image.crossOrigin = 'anonymous';
-      image.src = originalSrc;
+      const imgs = document.querySelectorAll('.dithered');
+      imgs.forEach(img => {
+        const originalSrc = img.src;
+        const image = new Image();
+        image.crossOrigin = 'anonymous';
+        image.src = originalSrc;
 
-      image.onload = function () {
-        floydSteinbergDither(image, (ditheredDataURL) => {
-          img.src = ditheredDataURL;
-        });
-      };
+        image.onload = function () {
+          floydSteinbergDither(image, (ditheredDataURL) => {
+            img.src = ditheredDataURL;
+          });
+        };
+      });
     };
   </script>
 </body>
