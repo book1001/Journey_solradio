@@ -11,8 +11,8 @@
       padding: 0;
     } 
     #printed {
-      width: 384px;
-      height: 912px;
+      width: 656px;
+      height: 1310px;
       border: 20px solid black;
       box-sizing: border-box;
     }
@@ -41,7 +41,7 @@
     <img src="img/PHO00014.jpg" style="width:100%;">
   </div>
 
-  <canvas id="previewCanvas" width="384" height="912"></canvas>
+  <canvas id="previewCanvas" width="656" height="1310"></canvas>
 
   <button onclick="captureAndPrint()">프린트하기</button>
 
@@ -51,8 +51,8 @@
       const canvas = document.getElementById('previewCanvas');
 
       html2canvas(target, {
-        width: 384,
-        height: 912,
+        width: 656,
+        height: 1310,
         scale: 1
       }).then(capturedCanvas => {
         const ctx = canvas.getContext('2d');
