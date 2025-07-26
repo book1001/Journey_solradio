@@ -15,6 +15,10 @@
   <link rel="stylesheet" href="font.css">
   <link rel="stylesheet" href="tv.css">
   <style>
+    #printWrapper {
+      display: none;
+    }
+
     @media print {
       #btn_print {
         display: none;
@@ -25,12 +29,23 @@
       .Block_description {
         display: none;
       }
+
+      #printWrapper {
+        display: block !important;
+        margin: 0;
+        padding: 0;
+      }
+
+      #printWrapper img {
+        max-width: 100%;
+        display: block;
+      }
     }
   </style>
 </head>
 
 <body>
-  <button id="btn_print" onclick="printTarget()">프린트하기</button>
+  <button id="btn_print" onclick="printOnlyTarget()">프린트하기</button>
   <!-- ======================================================= -->
   <!-- TV: Container -->
   <!-- ======================================================= -->
@@ -58,7 +73,7 @@
   <!-- API -->
   <!-- ======================================================= -->
   <div id="targetArea" class="ARENA-container">
-    <input type="text">
+    <p>sample</p>
     <div class="TV-btns">
       <button id="btn-P" disabled><</button>
       <div class="btn-pages"></div>
@@ -66,6 +81,7 @@
     </div>
   </div>
 
+  <div id="printWrapper"></div>
 
   <!-- ======================================================= -->
   <!-- JS -->
@@ -73,14 +89,31 @@
   <script type="text/javascript" src="tv.js"></script>
 
   <script>
-    function printTarget() {
-      // 스크롤 제거
-      document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
-      window.scrollTo(0, 0);
+    function printOnlyTarget() {
+      const target = document.getElementById('targetArea');
+      const wrapper = document.getElementById('printWrapper');
 
-      // 프린트 실행
-      window.print();
+      html2canvas(target, {
+        scale: 2,
+        useCORS: true,
+      }).then(canvas => {
+        // 캔버스를 이미지로 변환
+        const img = new Image();
+        img.src = canvas.toDataURL('image/png');
+        img.onload = () => {
+          wrapper.innerHTML = '';
+          wrapper.appendChild(img);
+
+          // scroll 제거 및 print
+          document.body.style.overflow = 'hidden';
+          window.scrollTo(0, 0);
+
+          // 프린트
+          setTimeout(() => {
+            window.print();
+          }, 100);
+        };
+      });
     }
   </script>
 
