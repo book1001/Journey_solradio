@@ -73,7 +73,7 @@
   <!-- ======================================================= -->
   <script type="text/javascript" src="tv.js"></script>
 
- <script>
+<script>
 function printTarget() {
   const target = document.getElementById("targetArea");
   const targetHTML = target.outerHTML;
@@ -95,14 +95,12 @@ function printTarget() {
             background: white;
           }
           #targetArea img {
-            width: 384px;
-            image-rendering: pixelated;
-            filter: contrast(1.0) brightness(1.0);
-          }
-          .Block_title {
-            display: none;
+            width: 384px; /* 58mm 감열지용 */
           }
           .noise {
+            display: none;
+          }
+          .Block_title {
             display: none;
           }
         </style>
@@ -110,14 +108,7 @@ function printTarget() {
       <body>
         ${targetHTML}
         <script>
-          function applyOrderedDithering(img) {
-            const bayer = [
-              [ 15, 135, 45, 165 ],
-              [195, 75, 225, 105 ],
-              [60, 180, 30, 150 ],
-              [240, 120, 210, 90 ]
-            ];
-
+          function applyFloydSteinberg(img) {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             const clone = new Image();
@@ -128,24 +119,38 @@ function printTarget() {
               const scale = 384 / clone.width;
               const w = 384;
               const h = Math.floor(clone.height * scale);
+
               canvas.width = w;
               canvas.height = h;
-
               ctx.drawImage(clone, 0, 0, w, h);
+
               const imgData = ctx.getImageData(0, 0, w, h);
               const data = imgData.data;
+              const gray = new Array(w * h);
+
+              for (let i = 0; i < data.length; i += 4) {
+                const avg = 0.3 * data[i] + 0.59 * data[i + 1] + 0.11 * data[i + 2];
+                gray[i / 4] = avg;
+              }
 
               for (let y = 0; y < h; y++) {
                 for (let x = 0; x < w; x++) {
-                  const i = (y * w + x) * 4;
-                  const r = data[i];
-                  const g = data[i + 1];
-                  const b = data[i + 2];
-                  const gray = 0.3 * r + 0.59 * g + 0.11 * b;
-                  const threshold = bayer[y % 4][x % 4];
-                  const value = gray > threshold ? 255 : 0;
-                  data[i] = data[i + 1] = data[i + 2] = value;
+                  const i = y * w + x;
+                  const old = gray[i];
+                  const newP = old < 128 ? 0 : 255;
+                  const err = old - newP;
+                  gray[i] = newP;
+
+                  if (x + 1 < w) gray[i + 1] += err * 7 / 16;
+                  if (x - 1 >= 0 && y + 1 < h) gray[i + w - 1] += err * 3 / 16;
+                  if (y + 1 < h) gray[i + w] += err * 5 / 16;
+                  if (x + 1 < w && y + 1 < h) gray[i + w + 1] += err * 1 / 16;
                 }
+              }
+
+              for (let i = 0; i < data.length; i += 4) {
+                const v = gray[i / 4] < 128 ? 0 : 255;
+                data[i] = data[i + 1] = data[i + 2] = v;
               }
 
               ctx.putImageData(imgData, 0, 0);
@@ -160,14 +165,8 @@ function printTarget() {
           window.onload = function () {
             const imgs = document.querySelectorAll('#targetArea img');
             let processed = 0;
-            if (imgs.length === 0) {
-              window.print();
-              setTimeout(() => window.close(), 500);
-              return;
-            }
-
             imgs.forEach((img) => {
-              applyOrderedDithering(img);
+              applyFloydSteinberg(img);
               img.onload = () => {
                 processed++;
                 if (processed === imgs.length) {
@@ -178,15 +177,20 @@ function printTarget() {
                 }
               };
             });
+
+            // 이미지가 없을 경우 즉시 프린트
+            if (imgs.length === 2) {
+              window.print();
+              setTimeout(() => window.close(), 500);
+            }
           };
         <\/script>
       </body>
     </html>
   `);
-
   printWindow.document.close();
 }
-  </script>
+</script>
 
 
 
