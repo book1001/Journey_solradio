@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+  <title>☀︎</title>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <base target="_blank">
+  
+  <!--  This is for routing  -->
+  <script src="//unpkg.com/navigo"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+  <!-- css -->
+  <link rel="stylesheet" href="font.css">
+  <link rel="stylesheet" href="tv.css">
+  <style>
+    @media print {
+  body * {
+    visibility: hidden; /* 모두 숨기기 */
+  }
+  #targetArea, #targetArea * {
+    visibility: visible; /* targetArea와 자식은 보이게 */
+  }
+  #targetArea {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}
+  </style>
+</head>
+
+<body>
+  <button onclick="printTarget()">프린트하기</button>
+  <!-- ======================================================= -->
+  <!-- TV: Container -->
+  <!-- ======================================================= -->
+  <div class="TV-container">
+    <img class="TV-skin" src="img_tv/skin_y.png">
+
+    <div id="playInfo">Press the <span style="color: yellow;">☀︎</span> button to play Sunlight TV</div>
+    <div id="playInfoBg"></div>
+
+    <div class="TV-btns">
+      <button id="btn-P" disabled><</button>
+      <div class="btn-pages"></div>
+      <button id="btn-N">></button>
+      <!-- <button onclick="SET_mono()">mono</button> -->
+    </div>
+
+    <input type="text" id="TV-slug" placeholder=": your public Are.na URL here">
+    <!-- <div id="TV-slug">your public Are.na URL here</div> -->
+  </div>
+
+  <div id="lyrics"></div>
+  <audio id="lalaland" src="sound/lalaland_lyrics.mp3" style="position: absolute; bottom: 0; left: 0; z-index: 2;"></audio>
+
+
+  <!-- ======================================================= -->
+  <!-- API -->
+  <!-- ======================================================= -->
+  <div id="targetArea" class="ARENA-container">
+    <input type="text">
+  </div>
+
+
+  <!-- ======================================================= -->
+  <!-- JS -->
+  <!-- ======================================================= -->
+  <script type="text/javascript" src="tv.js"></script>
+
+  <script>
+function printTarget() {
+  const target = document.getElementById("targetArea");
+  const printWindow = window.open('', '', 'width=600,height=400');
+
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Print Preview</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20px; }
+          img {
+            width: 100%;
+          }
+          .noise {
+            display: none;
+          }
+        </style>
+      </head>
+      <body>
+        ${target.outerHTML}
+        <script>
+          window.onload = function() {
+            window.focus();
+            window.print();
+            // 사용자가 인쇄 완료 후 창을 직접 닫도록 안내 (팝업 자동 닫기 대신)
+            // 또는 아래 주석 해제 시 1초 후 자동 닫기 시도 가능
+            // setTimeout(() => window.close(), 1000);
+          };
+        <\/script>
+      </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+}
+
+  </script>
+</body>
+  
+</html>
