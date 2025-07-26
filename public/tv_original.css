@@ -310,22 +310,23 @@ video {
 
   place-items: center;
   position: fixed;
-  top: 0;
+  top: 50%;
   left: 50%;
-  width: 384px;
-  height: 217px;
+  width: 205px;
+  height: 155px;
   margin: 0;
   padding: 0;
   aspect-ratio: 300 / 200;
   /* aspect-ratio: 300 / 319; */
   /* aspect-ratio: 322 / 300; */
   /* aspect-ratio: 328 / 274; */
-  -webkit-transform: translate(-50%, 0); /* Safari */
-  -moz-transform: translate(-50%, 0); /* Firefox */
-  -ms-transform: translate(-50%, 0); /* IE 9 */
-  -o-transform: translate(-50%, 0); /* Opera */
-  transform: translate(-50%, 0);
+  -webkit-transform: translate(-50%, -80%); /* Safari */
+  -moz-transform: translate(-50%, -80%); /* Firefox */
+  -ms-transform: translate(-50%, -80%); /* IE 9 */
+  -o-transform: translate(-50%, -80%); /* Opera */
+  transform: translate(-50%, -80%);
   border: none;
+  background-image: url("img_tv/noise.gif");
 }
 
 
