@@ -16,6 +16,14 @@
   <link rel="stylesheet" href="tv.css">
   <style>
     @media print {
+      html, body {
+        width: auto;
+        height: auto;
+        overflow: hidden;
+      }
+      body * {
+        display: none !important;
+      }
       #btn_print {
         display: none;
       }
@@ -28,11 +36,15 @@
       .noise {
         display: none;
       }
+      #targetArea, #targetArea * {
+        display: block !important;
+        visibility: visible !important;
+      }
       .ARENA-container {
         top: 0;
         left: 50%;
         transform: translate(-50%, 0);
-        width: 100%;
+        width: 384px;
         height: auto;
         background-image: none;
       }
