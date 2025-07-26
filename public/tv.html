@@ -5,6 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
+  <link rel="stylesheet" href="font.css">
   <style>
     body {
       margin: 0;
@@ -18,6 +19,12 @@
     #printed {
       width: 100%;
       /* border: 10px solid black; */
+    }
+
+    h1 {
+      font-family: 'AppleChancery';
+      text-align: center;
+      font-size: 40px;
     }
 
     @media print {
@@ -41,16 +48,15 @@
 </head>
 <body>
   <div id="printed">
-    <h2>Sol–Ra☀︎dio</h2>
+    <h1>Sol–Ra☀︎dio</h1>
     <img class="dithered d1" src="img/PHO00014.jpg">
-
   </div>
 
   <button onclick="window.print()">🖨 프린트하기</button>
   
   <script>
     function floydSteinbergDither(image, callback) {
-      const targetWidth = 500;
+      const targetWidth = 400;
       const scale = targetWidth / image.width;
       const targetHeight = Math.floor(image.height * scale);
 
