@@ -1,183 +1,59 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
-  <title>☀︎</title>
-
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <base target="_blank">
-  
-  <!--  This is for routing  -->
-  <script src="//unpkg.com/navigo"></script>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
-  <!-- css -->
-  <link rel="stylesheet" href="font.css">
-  <link rel="stylesheet" href="tv.css">
-  <style>
-    #targetArea {
-      width: 100%;
-      height: auto;
-    }
-
-    #printWrapper {
-      display: none;
-    }
-
-    #btn_print {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 10;
-    }
-
-    @media print {
-      canvas {
-        display: block;
-        width: 58mm; /* 58mm 감열지인 경우 적절한 값 조절 */
-        height: auto;
-        margin: 0 auto;
-      }
-      #btn_print {
-        display: none;
-      }
-      .noise {
-        display: none;
-      }
-      .Block_description {
-        display: none;
-      }
-
-      #printWrapper {
-        display: block !important;
-        margin: 0;
-        padding: 0;
-      }
-
-      #printWrapper img {
-        max-width: 100%;
-        display: block;
-      }
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>Print One Image via iframe</title>
 </head>
-
 <body>
-  <button id="btn_print" onclick="printOnlyTarget()">프린트하기</button>
-  <!-- ======================================================= -->
-  <!-- TV: Container -->
-  <!-- ======================================================= -->
-  <!-- <div class="TV-container">
-    <img class="TV-skin" src="img_tv/skin_y.png">
+  <h1>이 텍스트는 인쇄되지 않습니다</h1>
 
-    <div id="playInfo">Press the <span style="color: yellow;">☀︎</span> button to play Sunlight TV</div>
-    <div id="playInfoBg"></div>
+  <img id="mainImage" src="img/PHO00014.jpg" width="384">
 
-    <div class="TV-btns">
-      <button id="btn-P" disabled><</button>
-      <div class="btn-pages"></div>
-      <button id="btn-N">></button>
-    </div>
-
-    <input type="text" id="TV-slug" placeholder=": your public Are.na URL here">
-  </div> -->
-
-  <div id="lyrics" style="display: none;"></div>
-  <audio id="lalaland" src="sound/lalaland_lyrics.mp3" style="position: absolute; bottom: 0; left: 0; z-index: 2;"></audio>
-
-  
-
-  <!-- ======================================================= -->
-  <!-- API -->
-  <!-- ======================================================= -->
-  <div id="targetArea" class="ARENA-container">
-    <img src="img/PHO00014.jpg" style="width: 100%;">
-    <!-- <div class="TV-btns">
-      <button id="btn-P" disabled><</button>
-      <div class="btn-pages"></div>
-      <button id="btn-N">></button>
-    </div> -->
-  </div>
-
-  <div id="printWrapper"></div>
-
-  <!-- ======================================================= -->
-  <!-- JS -->
-  <!-- ======================================================= -->
-  <!-- <script type="text/javascript" src="tv.js"></script> -->
+  <button onclick="printOnlyImage()">이 이미지만 프린트</button>
 
   <script>
-    function printOnlyTarget() {
-      const target = document.getElementById('targetArea');
-      const wrapper = document.getElementById('printWrapper');
+    function printOnlyImage() {
+      const imageSrc = "img/PHO00014.jpg";
 
-      html2canvas(target, {
-        width: 384,
-        height: 217,
-        scale: 2,
-        useCORS: true,
-      }).then(canvas => {
-        // 캔버스를 이미지로 변환
-        const img = new Image();
-        img.src = canvas.toDataURL('image/png');
-        img.onload = () => {
-          wrapper.innerHTML = '';
-          wrapper.appendChild(img);
+      // iframe 생성
+      const iframe = document.createElement('iframe');
+      iframe.style.position = 'fixed';
+      iframe.style.right = '0';
+      iframe.style.bottom = '0';
+      iframe.style.width = '0';
+      iframe.style.height = '0';
+      iframe.style.border = 'none';
+      document.body.appendChild(iframe);
 
-          // scroll 제거 및 print
-          document.body.style.overflow = 'hidden';
-          window.scrollTo(0, 0);
-
-          // 프린트
-          setTimeout(() => {
-            window.print();
-          }, 100);
-        };
-      });
-    }
-  </script>
-
-  <!-- <script>
-    function printTarget() {
-      const target = document.getElementById("targetArea");
-      const printWindow = window.open('', '', 'width=600,height=400');
-
-      printWindow.document.write(`
+      const doc = iframe.contentWindow.document;
+      doc.open();
+      doc.write(`
         <html>
           <head>
-            <title>Print Preview</title>
             <style>
-              html,body { 
-              margin: 0;
-              padding: 0;
+              body {
+                margin: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
               }
               img {
-                width: 100%;
-              }
-              .noise {
-                display: none;
+                width: 384px;
               }
             </style>
           </head>
           <body>
-            ${target.outerHTML}
-            <script>
-              window.onload = function() {
-                window.focus();
-                window.print();
-                // 사용자가 인쇄 완료 후 창을 직접 닫도록 안내 (팝업 자동 닫기 대신)
-                // 또는 아래 주석 해제 시 1초 후 자동 닫기 시도 가능
-                // setTimeout(() => window.close(), 1000);
-              };
-            <\/script>
+            <img src="${imageSrc}" onload="window.focus(); window.print();">
           </body>
         </html>
       `);
+      doc.close();
 
-      printWindow.document.close();
+      // 프린트 후 iframe 제거 (optional)
+      setTimeout(() => {
+        document.body.removeChild(iframe);
+      }, 3000); // 브라우저에 따라 더 길게 설정 가능
     }
-
-  </script> -->
+  </script>
 </body>
-  
 </html>
