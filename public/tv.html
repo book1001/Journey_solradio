@@ -1,126 +1,115 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Print #printed with dithering</title>
+  <title>☀︎</title>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
   <style>
-    html, body {
+    body {
       margin: 0;
       padding: 0;
     }
-    #printed {
-      width: 656px;
-      height: 1310px;
-      border: 20px solid black;
-      box-sizing: border-box;
+
+    img {
+      width: 100%;
     }
 
-    #previewCanvas {
-      display: none;
+    #printed {
+      width: 100%;
+      border: 10px solid black;
     }
 
     @media print {
       body * {
         display: none !important;
       }
-      #previewCanvas {
+
+      #printed, #printed * {
         display: block !important;
+      }
+
+      #printed {
         position: absolute;
         top: 0;
         left: 0;
+        width: 656px;
+        height: 1310px;
       }
     }
   </style>
 </head>
 <body>
-
   <div id="printed">
-    <p>이 영역만 출력됩니다.</p>
-    <img id="dithered" src="img/PHO00014.jpg" style="width:100%;">
+    <h2>디더링 적용 이미지</h2>
+    <img id="dithered" src="img/PHO00014.jpg">
   </div>
 
-  <canvas id="previewCanvas" width="656" height="1310"></canvas>
-
-  <button onclick="captureAndPrint()">프린트하기</button>
-
+  <button onclick="window.print()">🖨 프린트하기</button>
+  
   <script>
-    function floydSteinbergDither(img, callback) {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
+    function floydSteinbergDither(image, callback) {
+      const targetWidth = 384;
+      const scale = targetWidth / image.width;
+      const targetHeight = Math.floor(image.height * scale);
 
-      img.onload = () => {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.drawImage(img, 0, 0);
+      const canvas = document.createElement('canvas');
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      const ctx = canvas.getContext('2d');
 
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-        const width = canvas.width;
-        const height = canvas.height;
+      ctx.drawImage(image, 0, 0, targetWidth, targetHeight);
 
-        for (let y = 0; y < height; y++) {
-          for (let x = 0; x < width; x++) {
-            const i = (y * width + x) * 4;
-            const oldPixel = data[i] * 0.3 + data[i + 1] * 0.59 + data[i + 2] * 0.11;
-            const newPixel = oldPixel < 128 ? 0 : 255;
-            const error = oldPixel - newPixel;
+      const imageData = ctx.getImageData(0, 0, targetWidth, targetHeight);
+      const data = imageData.data;
+      const gray = new Array(targetWidth * targetHeight);
 
-            data[i] = data[i + 1] = data[i + 2] = newPixel;
+      // Convert to grayscale
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i], g = data[i + 1], b = data[i + 2];
+        gray[i / 4] = 0.299 * r + 0.587 * g + 0.114 * b;
+      }
 
-            function distributeError(ix, iy, factor) {
-              if (ix >= 0 && ix < width && iy >= 0 && iy < height) {
-                const j = (iy * width + ix) * 4;
-                data[j] += error * factor;
-                data[j + 1] += error * factor;
-                data[j + 2] += error * factor;
-              }
-            }
+      // Floyd–Steinberg dithering
+      for (let y = 0; y < targetHeight; y++) {
+        for (let x = 0; x < targetWidth; x++) {
+          const i = y * targetWidth + x;
+          const old = gray[i];
+          const newPixel = old < 128 ? 0 : 255;
+          const error = old - newPixel;
+          gray[i] = newPixel;
 
-            distributeError(x + 1, y, 7 / 16);
-            distributeError(x - 1, y + 1, 3 / 16);
-            distributeError(x, y + 1, 5 / 16);
-            distributeError(x + 1, y + 1, 1 / 16);
-          }
+          if (x + 1 < targetWidth) gray[i + 1] += error * 7 / 16;
+          if (x > 0 && y + 1 < targetHeight) gray[i + targetWidth - 1] += error * 3 / 16;
+          if (y + 1 < targetHeight) gray[i + targetWidth] += error * 5 / 16;
+          if (x + 1 < targetWidth && y + 1 < targetHeight) gray[i + targetWidth + 1] += error * 1 / 16;
         }
+      }
 
-        ctx.putImageData(imageData, 0, 0);
-        callback(canvas.toDataURL());
+      // Apply dithered grayscale to image data
+      for (let i = 0; i < data.length; i += 4) {
+        const v = gray[i / 4] < 128 ? 0 : 255;
+        data[i] = data[i + 1] = data[i + 2] = v;
+        data[i + 3] = 255;
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+      callback(canvas.toDataURL());
+    }
+
+    window.onload = function () {
+      const img = document.getElementById('dithered');
+      const originalSrc = img.src;
+      const image = new Image();
+      image.crossOrigin = 'anonymous';
+      image.src = originalSrc;
+
+      image.onload = function () {
+        floydSteinbergDither(image, (ditheredDataURL) => {
+          img.src = ditheredDataURL;
+        });
       };
-    }
-
-    function captureAndPrint() {
-      const img = document.getElementById("dithered");
-
-      const cloned = new Image();
-      cloned.crossOrigin = "anonymous";
-      cloned.src = img.src;
-
-      floydSteinbergDither(cloned, (ditheredDataUrl) => {
-        img.src = ditheredDataUrl;
-
-        // 이미지가 교체된 후 캡처
-        setTimeout(() => {
-          const target = document.getElementById('printed');
-          const canvas = document.getElementById('previewCanvas');
-          html2canvas(target, {
-            width: 656,
-            height: 1310,
-            scale: 1
-          }).then(capturedCanvas => {
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(capturedCanvas, 0, 0, 656, 1310);
-
-            setTimeout(() => {
-              window.print();
-            }, 300);
-          });
-        }, 500); // 이미지 렌더링 완료 후 html2canvas 실행
-      });
-    }
+    };
   </script>
-
 </body>
 </html>
