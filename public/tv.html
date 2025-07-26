@@ -15,6 +15,11 @@
   <link rel="stylesheet" href="font.css">
   <link rel="stylesheet" href="tv.css">
   <style>
+    #targetArea {
+      width: 384px;
+      height: 217px;
+    }
+
     #printWrapper {
       display: none;
     }
@@ -94,6 +99,8 @@
       const wrapper = document.getElementById('printWrapper');
 
       html2canvas(target, {
+        width: 384,
+        height: 217,
         scale: 2,
         useCORS: true,
       }).then(canvas => {
