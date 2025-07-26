@@ -16,21 +16,18 @@
   <link rel="stylesheet" href="tv.css">
   <style>
     @media print {
-      body * {
-        visibility: hidden;
-      }
-      #targetArea, #targetArea * {
-        visibility: visible;
-      }
-      #targetArea {
-        position: absolute;
-        left: 0;
-        top: 0;
-      }
-    }
-    #targetArea img {
-      width: 100%;
-    }
+  body * {
+    visibility: hidden; /* 모두 숨기기 */
+  }
+  #targetArea, #targetArea * {
+    visibility: visible; /* targetArea와 자식은 보이게 */
+  }
+  #targetArea {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}
   </style>
 </head>
 
@@ -73,130 +70,47 @@
   <!-- ======================================================= -->
   <script type="text/javascript" src="tv.js"></script>
 
-<script>
-function printTarget() {
-  const target = document.getElementById("targetArea");
-  const targetHTML = target.outerHTML;
-  const printWindow = window.open('', '_blank', 'width=384,height=217');
+  <script>
+    function printTarget() {
+      const target = document.getElementById("targetArea");
+      const printWindow = window.open('', '', 'width=600,height=400');
 
-  if (!printWindow) {
-    alert("팝업이 차단되었습니다. 팝업 차단을 해제해주세요!");
-    return;
-  }
-
-  printWindow.document.write(`
-    <html>
-      <head>
-        <title>Print Preview</title>
-        <style>
-          body {
-            margin: 0;
-            padding: 0;
-            background: white;
-          }
-          #targetArea img {
-            width: 100%;
-          }
-          .Block_title {
-            display: none;
-          }
-          .noise { 
-            display: none;
-          }
-        </style>
-      </head>
-      <body>
-        ${targetHTML}
-        <script>
-          function applyFloydSteinberg(img, callback) {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const clone = new Image();
-            clone.crossOrigin = 'anonymous';
-            clone.src = img.src;
-
-            clone.onload = function () {
-              const scale = 384 / clone.width;
-              const w = 384;
-              const h = Math.floor(clone.height * scale);
-              canvas.width = w;
-              canvas.height = h;
-              ctx.drawImage(clone, 0, 0, w, h);
-
-              const imgData = ctx.getImageData(0, 0, w, h);
-              const data = imgData.data;
-              const gray = new Array(w * h);
-              for (let i = 0; i < data.length; i += 4) {
-                const avg = 0.3 * data[i] + 0.59 * data[i + 1] + 0.11 * data[i + 2];
-                gray[i / 4] = avg;
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Print Preview</title>
+            <style>
+              html,body { 
+              margin: 0;
+              padding: 0;
               }
-
-              for (let y = 0; y < h; y++) {
-                for (let x = 0; x < w; x++) {
-                  const i = y * w + x;
-                  const old = gray[i];
-                  const newP = old < 128 ? 0 : 255;
-                  const err = old - newP;
-                  gray[i] = newP;
-
-                  if (x + 1 < w) gray[i + 1] += err * 7 / 16;
-                  if (x - 1 >= 0 && y + 1 < h) gray[i + w - 1] += err * 3 / 16;
-                  if (y + 1 < h) gray[i + w] += err * 5 / 16;
-                  if (x + 1 < w && y + 1 < h) gray[i + w + 1] += err * 1 / 16;
-                }
+              img {
+                width: 100%;
               }
-
-              for (let i = 0; i < data.length; i += 4) {
-                const v = gray[i / 4] < 128 ? 0 : 255;
-                data[i] = data[i + 1] = data[i + 2] = v;
+              .noise {
+                display: none;
               }
-
-              ctx.putImageData(imgData, 0, 0);
-
-              const finalImg = new Image();
-              finalImg.src = canvas.toDataURL();
-              finalImg.onload = () => {
-                img.replaceWith(finalImg);
-                callback(); // 디더링된 이미지가 로드 완료됐을 때 호출
+            </style>
+          </head>
+          <body>
+            ${target.outerHTML}
+            <script>
+              window.onload = function() {
+                window.focus();
+                window.print();
+                // 사용자가 인쇄 완료 후 창을 직접 닫도록 안내 (팝업 자동 닫기 대신)
+                // 또는 아래 주석 해제 시 1초 후 자동 닫기 시도 가능
+                // setTimeout(() => window.close(), 1000);
               };
-            };
-          }
+            <\/script>
+          </body>
+        </html>
+      `);
 
-          window.onload = function () {
-            const imgs = document.querySelectorAll('#targetArea img');
-            if (imgs.length === 0) {
-              window.print();
-              setTimeout(() => window.close(), 500);
-              return;
-            }
+      printWindow.document.close();
+    }
 
-            let loadedCount = 0;
-            const total = imgs.length;
-
-            imgs.forEach((img) => {
-              applyFloydSteinberg(img, () => {
-                loadedCount++;
-                if (loadedCount === total) {
-                  setTimeout(() => {
-                    window.print();
-                    setTimeout(() => window.close(), 500);
-                  }, 500); // 약간의 렌더링 대기시간 추가
-                }
-              });
-            });
-          };
-        <\/script>
-      </body>
-    </html>
-  `);
-
-  printWindow.document.close();
-}
-</script>
-
-
-
-
+  </script>
 </body>
   
 </html>

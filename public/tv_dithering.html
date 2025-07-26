@@ -1,0 +1,199 @@
+<!doctype html>
+<html>
+<head>
+  <title>☀︎</title>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <base target="_blank">
+  
+  <!--  This is for routing  -->
+  <script src="//unpkg.com/navigo"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+  <!-- css -->
+  <link rel="stylesheet" href="font.css">
+  <link rel="stylesheet" href="tv.css">
+  <style>
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #targetArea, #targetArea * {
+        visibility: visible;
+      }
+      #targetArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+      }
+    }
+    #targetArea img {
+      max-width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <button onclick="printTarget()">프린트하기</button>
+  <!-- ======================================================= -->
+  <!-- TV: Container -->
+  <!-- ======================================================= -->
+  <div class="TV-container">
+    <img class="TV-skin" src="img_tv/skin_y.png">
+
+    <div id="playInfo">Press the <span style="color: yellow;">☀︎</span> button to play Sunlight TV</div>
+    <div id="playInfoBg"></div>
+
+    <div class="TV-btns">
+      <button id="btn-P" disabled><</button>
+      <div class="btn-pages"></div>
+      <button id="btn-N">></button>
+      <!-- <button onclick="SET_mono()">mono</button> -->
+    </div>
+
+    <input type="text" id="TV-slug" placeholder=": your public Are.na URL here">
+    <!-- <div id="TV-slug">your public Are.na URL here</div> -->
+  </div>
+
+  <div id="lyrics"></div>
+  <audio id="lalaland" src="sound/lalaland_lyrics.mp3" style="position: absolute; bottom: 0; left: 0; z-index: 2;"></audio>
+
+
+  <!-- ======================================================= -->
+  <!-- API -->
+  <!-- ======================================================= -->
+  <div id="targetArea" class="ARENA-container">
+    <input type="text">
+  </div>
+
+
+  <!-- ======================================================= -->
+  <!-- JS -->
+  <!-- ======================================================= -->
+  <script type="text/javascript" src="tv.js"></script>
+
+<script>
+function printTarget() {
+  const target = document.getElementById("targetArea");
+  const targetHTML = target.outerHTML;
+  const printWindow = window.open('', '_blank', 'width=384,height=217');
+
+  if (!printWindow) {
+    alert("팝업이 차단되었습니다. 팝업 차단을 해제해주세요!");
+    return;
+  }
+
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Print Preview</title>
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
+            background: white;
+          }
+          #targetArea img {
+            width: 384px; /* 58mm 감열지용 */
+          }
+          .noise {
+            display: none;
+          }
+          .Block_title {
+            display: none;
+          }
+        </style>
+      </head>
+      <body>
+        ${targetHTML}
+        <script>
+          function applyFloydSteinberg(img) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const clone = new Image();
+            clone.crossOrigin = 'anonymous';
+            clone.src = img.src;
+
+            clone.onload = function () {
+              const scale = 384 / clone.width;
+              const w = 384;
+              const h = Math.floor(clone.height * scale);
+
+              canvas.width = w;
+              canvas.height = h;
+              ctx.drawImage(clone, 0, 0, w, h);
+
+              const imgData = ctx.getImageData(0, 0, w, h);
+              const data = imgData.data;
+              const gray = new Array(w * h);
+
+              for (let i = 0; i < data.length; i += 4) {
+                const avg = 0.3 * data[i] + 0.59 * data[i + 1] + 0.11 * data[i + 2];
+                gray[i / 4] = avg;
+              }
+
+              for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                  const i = y * w + x;
+                  const old = gray[i];
+                  const newP = old < 128 ? 0 : 255;
+                  const err = old - newP;
+                  gray[i] = newP;
+
+                  if (x + 1 < w) gray[i + 1] += err * 7 / 16;
+                  if (x - 1 >= 0 && y + 1 < h) gray[i + w - 1] += err * 3 / 16;
+                  if (y + 1 < h) gray[i + w] += err * 5 / 16;
+                  if (x + 1 < w && y + 1 < h) gray[i + w + 1] += err * 1 / 16;
+                }
+              }
+
+              for (let i = 0; i < data.length; i += 4) {
+                const v = gray[i / 4] < 128 ? 0 : 255;
+                data[i] = data[i + 1] = data[i + 2] = v;
+              }
+
+              ctx.putImageData(imgData, 0, 0);
+              const finalImg = new Image();
+              finalImg.src = canvas.toDataURL();
+              finalImg.onload = () => {
+                img.replaceWith(finalImg);
+              };
+            };
+          }
+
+          window.onload = function () {
+            const imgs = document.querySelectorAll('#targetArea img');
+            let processed = 0;
+            imgs.forEach((img) => {
+              applyFloydSteinberg(img);
+              img.onload = () => {
+                processed++;
+                if (processed === imgs.length) {
+                  setTimeout(() => {
+                    window.print();
+                    setTimeout(() => window.close(), 500);
+                  }, 300);
+                }
+              };
+            });
+
+            // 이미지가 없을 경우 즉시 프린트
+            if (imgs.length === 0) {
+              window.print();
+              setTimeout(() => window.close(), 500);
+            }
+          };
+        <\/script>
+      </body>
+    </html>
+  `);
+  printWindow.document.close();
+}
+</script>
+
+
+
+</body>
+  
+</html>
