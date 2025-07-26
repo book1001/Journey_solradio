@@ -16,18 +16,21 @@
   <link rel="stylesheet" href="tv.css">
   <style>
     @media print {
-  body * {
-    visibility: hidden; /* 모두 숨기기 */
-  }
-  #targetArea, #targetArea * {
-    visibility: visible; /* targetArea와 자식은 보이게 */
-  }
-  #targetArea {
-    position: absolute;
-    left: 0;
-    top: 0;
-  }
-}
+      body * {
+        visibility: hidden;
+      }
+      #targetArea, #targetArea * {
+        visibility: visible;
+      }
+      #targetArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+      }
+    }
+    #targetArea img {
+      max-width: 100%;
+    }
   </style>
 </head>
 
@@ -70,25 +73,30 @@
   <!-- ======================================================= -->
   <script type="text/javascript" src="tv.js"></script>
 
-  <script>
+<script>
 function printTarget() {
   const target = document.getElementById("targetArea");
-  const printWindow = window.open('', '', 'width=800,height=600');
+  const targetHTML = target.outerHTML;
+  const printWindow = window.open('', '_blank', 'width=400,height=600');
+
+  if (!printWindow) {
+    alert("팝업이 차단되었습니다. 팝업 차단을 해제해주세요!");
+    return;
+  }
 
   printWindow.document.write(`
     <html>
       <head>
         <title>Print Preview</title>
         <style>
-          html, body {
+          body {
             margin: 0;
             padding: 0;
             background: white;
           }
-          img {
-            width: 100%;
-            height: auto;
-            display: block;
+          #targetArea img {
+            width: 384px; /* 58mm 감열지용 */
+            filter: contrast(0.9) brightness(1.1);
           }
           .noise {
             display: none;
@@ -96,96 +104,94 @@ function printTarget() {
         </style>
       </head>
       <body>
-        ${target.outerHTML}
+        ${targetHTML}
         <script>
-          function applyFloydSteinbergDithering(imgElement) {
+          function applyFloydSteinberg(img) {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            img.src = imgElement.src;
+            const clone = new Image();
+            clone.crossOrigin = 'anonymous';
+            clone.src = img.src;
 
-            img.onload = function () {
-              const width = img.width;
-              const height = img.height;
-              canvas.width = width;
-              canvas.height = height;
-              ctx.drawImage(img, 0, 0, width, height);
-              const imageData = ctx.getImageData(0, 0, width, height);
-              const data = imageData.data;
+            clone.onload = function () {
+              const scale = 384 / clone.width;
+              const w = 384;
+              const h = Math.floor(clone.height * scale);
 
-              // Convert to grayscale
-              const gray = new Array(width * height);
+              canvas.width = w;
+              canvas.height = h;
+              ctx.drawImage(clone, 0, 0, w, h);
+
+              const imgData = ctx.getImageData(0, 0, w, h);
+              const data = imgData.data;
+              const gray = new Array(w * h);
+
               for (let i = 0; i < data.length; i += 4) {
-                const avg = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+                const avg = 0.3 * data[i] + 0.59 * data[i + 1] + 0.11 * data[i + 2];
                 gray[i / 4] = avg;
               }
 
-              // Floyd–Steinberg dithering
-              for (let y = 0; y < height; y++) {
-                for (let x = 0; x < width; x++) {
-                  const i = y * width + x;
-                  const oldPixel = gray[i];
-                  const newPixel = oldPixel < 128 ? 0 : 255;
-                  const quantError = oldPixel - newPixel;
-                  gray[i] = newPixel;
+              for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                  const i = y * w + x;
+                  const old = gray[i];
+                  const newP = old < 128 ? 0 : 255;
+                  const err = old - newP;
+                  gray[i] = newP;
 
-                  if (x + 1 < width)
-                    gray[i + 1] += quantError * 7 / 16;
-                  if (x - 1 >= 0 && y + 1 < height)
-                    gray[i + width - 1] += quantError * 3 / 16;
-                  if (y + 1 < height)
-                    gray[i + width] += quantError * 5 / 16;
-                  if (x + 1 < width && y + 1 < height)
-                    gray[i + width + 1] += quantError * 1 / 16;
+                  if (x + 1 < w) gray[i + 1] += err * 7 / 16;
+                  if (x - 1 >= 0 && y + 1 < h) gray[i + w - 1] += err * 3 / 16;
+                  if (y + 1 < h) gray[i + w] += err * 5 / 16;
+                  if (x + 1 < w && y + 1 < h) gray[i + w + 1] += err * 1 / 16;
                 }
               }
 
-              // Set image data
               for (let i = 0; i < data.length; i += 4) {
-                const val = gray[i / 4] < 128 ? 0 : 255;
-                data[i] = data[i + 1] = data[i + 2] = val;
+                const v = gray[i / 4] < 128 ? 0 : 255;
+                data[i] = data[i + 1] = data[i + 2] = v;
               }
 
-              ctx.putImageData(imageData, 0, 0);
-
-              const newImg = new Image();
-              newImg.src = canvas.toDataURL();
-              newImg.width = img.width;
-              newImg.height = img.height;
-              imgElement.replaceWith(newImg);
+              ctx.putImageData(imgData, 0, 0);
+              const finalImg = new Image();
+              finalImg.src = canvas.toDataURL();
+              finalImg.onload = () => {
+                img.replaceWith(finalImg);
+              };
             };
           }
 
           window.onload = function () {
-            const images = document.querySelectorAll('#targetArea img');
-            if (images.length === 0) {
-              window.print();
-              setTimeout(() => window.close(), 1000);
-            }
-
-            let processedCount = 0;
-            images.forEach((img) => {
-              applyFloydSteinbergDithering(img);
+            const imgs = document.querySelectorAll('#targetArea img');
+            let processed = 0;
+            imgs.forEach((img) => {
+              applyFloydSteinberg(img);
               img.onload = () => {
-                processedCount++;
-                if (processedCount === images.length) {
-                  window.print();
-                  setTimeout(() => window.close(), 1000);
+                processed++;
+                if (processed === imgs.length) {
+                  setTimeout(() => {
+                    window.print();
+                    setTimeout(() => window.close(), 500);
+                  }, 300);
                 }
               };
             });
+
+            // 이미지가 없을 경우 즉시 프린트
+            if (imgs.length === 0) {
+              window.print();
+              setTimeout(() => window.close(), 500);
+            }
           };
         <\/script>
       </body>
     </html>
   `);
-
   printWindow.document.close();
 }
+</script>
 
 
-  </script>
+
 </body>
   
 </html>
