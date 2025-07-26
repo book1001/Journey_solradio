@@ -32,6 +32,12 @@
     }
 
     @media print {
+      canvas {
+        display: block;
+        width: 58mm; /* 58mm 감열지인 경우 적절한 값 조절 */
+        height: auto;
+        margin: 0 auto;
+      }
       #btn_print {
         display: none;
       }
@@ -85,12 +91,12 @@
   <!-- API -->
   <!-- ======================================================= -->
   <div id="targetArea" class="ARENA-container">
-    <p>sample</p>
-    <div class="TV-btns">
+    <img src="img/PHO00014.jpg" style="width: 100%;">
+    <!-- <div class="TV-btns">
       <button id="btn-P" disabled><</button>
       <div class="btn-pages"></div>
       <button id="btn-N">></button>
-    </div>
+    </div> -->
   </div>
 
   <div id="printWrapper"></div>
@@ -98,7 +104,7 @@
   <!-- ======================================================= -->
   <!-- JS -->
   <!-- ======================================================= -->
-  <script type="text/javascript" src="tv.js"></script>
+  <!-- <script type="text/javascript" src="tv.js"></script> -->
 
   <script>
     function printOnlyTarget() {
