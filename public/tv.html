@@ -16,18 +16,23 @@
   <link rel="stylesheet" href="tv.css">
   <style>
     @media print {
-  body * {
-    visibility: hidden; /* 모두 숨기기 */
-  }
-  #targetArea, #targetArea * {
-    visibility: visible; /* targetArea와 자식은 보이게 */
-  }
-  #targetArea {
-    position: absolute;
-    left: 0;
-    top: 0;
-  }
-}
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
+      body * {
+        visibility: hidden; /* 모두 숨기기 */
+      }
+      #targetArea, #targetArea * {
+        visibility: visible; /* targetArea와 자식은 보이게 */
+      }
+      #targetArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+      }
+    }
   </style>
 </head>
 
@@ -83,6 +88,14 @@ function printTarget() {
           html,body { 
             margin: 0;
             padding: 0;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+          }
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
           }
           img {
             width: 100%;
@@ -100,7 +113,7 @@ function printTarget() {
             window.print();
             // 사용자가 인쇄 완료 후 창을 직접 닫도록 안내 (팝업 자동 닫기 대신)
             // 또는 아래 주석 해제 시 1초 후 자동 닫기 시도 가능
-            // setTimeout(() => window.close(), 1000);
+            setTimeout(() => window.close(), 1000);
           };
         <\/script>
       </body>
