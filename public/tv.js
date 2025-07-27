@@ -237,7 +237,7 @@ function SET_mono() {
 // Dithering
 // =============================================================
 function floydSteinbergDither(image, callback) {
-  const targetWidth = 384;
+  const targetWidth = 450;
   const scale = targetWidth / image.width;
   const targetHeight = Math.floor(image.height * scale);
 
