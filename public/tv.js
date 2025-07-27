@@ -131,7 +131,8 @@ function renderChannel(slug, page) {
                     case "Attachment":
                       return `
                       <img class="Block_img dithered" src="${block.image.large.url}"/>
-                      <input type="text" value="${block.description}" style="font-size: 30px;">
+                      <input type="text" style="font-size: 30px;" value="${block.description}"/>
+                      <p class="Block_text">${block.content}</p>
                       `;
 
                     // basic: text
@@ -144,7 +145,7 @@ function renderChannel(slug, page) {
                     case "Image":
                       return `
                       <img class="Block_img dithered" src="${block.image.large.url}"/>
-                      <input type="text" value="${block.description}" style="font-size: 30px;">
+                      <input type="text" style="font-size: 30px;" value="${block.description}"/>
                       <p class="Block_text">${block.content}</p>
                       `;
                       
