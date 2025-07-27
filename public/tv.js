@@ -144,8 +144,8 @@ function renderChannel(slug, page) {
                     case "Image":
                       return `
                       <img class="Block_img dithered" src="${block.image.large.url}"/>
+                      <input type="text" value="${block.description}" style="font-size: 30px;">
                       <p class="Block_text">${block.content}</p>
-                      <audio autoplay loop src="sound/noise.mp3"></audio>
                       `;
                       
                     // iframe: Youtube  
