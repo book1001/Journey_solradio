@@ -1,7 +1,7 @@
 let slug = 'fcumona-4ui';
 let page = 1; // Initialize the page number
 let totalPages = 1; // Initialize total pages
-let buttonsPerPage = 10;
+let buttonsPerPage = 20;
 
 window.onload = function() {
   renderTitle(slug);
