@@ -149,6 +149,7 @@ ${block.description}</textarea>
                       <img class="Block_img noise" src="img_tv/noise.gif">
                       <img class="Block_img dithered" src="${block.image.large.url}"/>
                       </div>
+                      <audio autoplay loop src="sound/noise.mp3"></audio>
                       <textarea name="note" rows="4" cols="50">
 ${block.title}
 
