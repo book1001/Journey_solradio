@@ -145,7 +145,10 @@ ${block.description}</textarea>
                     // basic: image
                     case "Image":
                       return `
-                      <div class="img_container"><img class="Block_img dithered" src="${block.image.large.url}"/></div>
+                      <div class="img_container">
+                      <img class="Block_img noise" src="img_tv/noise.gif">
+                      <img class="Block_img dithered" src="${block.image.large.url}"/>
+                      </div>
                       <textarea name="note" rows="4" cols="50">
 ${block.title}
 
