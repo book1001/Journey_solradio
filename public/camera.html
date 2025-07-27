@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+  <title>⠀</title>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="manifest" href="/manifest.json" />
+
+  <link id="favicon" rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90' fill='white'>☼</text></svg>">
+
+  <!-- css -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=search" />
+  <link rel="stylesheet" href="font.css">
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="index_media.css">
+</head>
+
+<body>
+  <input type="file" accept="image/*" capture="environment" id="cameraInput">
+  <!-- ====================================================== -->
+  <!-- JS -->
+  <!-- ====================================================== -->
+  <script>
+    document.getElementById('cameraInput').addEventListener('change', async function(e) {
+      const file = e.target.files[0];
+      const formData = new FormData();
+      formData.append('image', file);
+
+      await fetch('https://sol-radio-rpn4p.ondigitalocean.app/upload-to-arena', {
+        method: 'POST',
+        body: formData
+      });
+
+      alert("업로드 완료!");
+    });
+  </script>
+</body>
+</html>
