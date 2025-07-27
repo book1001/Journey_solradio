@@ -130,8 +130,8 @@ function renderChannel(slug, page) {
                     // mp4, mp3
                     case "Attachment":
                       return `
-                      <img class="Block_img" src="img/noise_mp34.gif">
-                      <video class="Block_video" autoplay loop src="${block.attachment.url}"></video>
+                      <img class="Block_img dithered" src="${block.image.large.url}"/>
+                      <input type="text" value="${block.description}" style="font-size: 30px;">
                       `;
 
                     // basic: text
