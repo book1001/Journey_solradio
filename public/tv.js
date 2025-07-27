@@ -115,7 +115,6 @@ function renderChannel(slug, page) {
                 ${(() => {
                   if (block.title && block.class !== 'Link' && block.class !== 'Channel') {
                     return `
-                    <strong class="Block_title">${block.title}</strong>
                     `;
                   }
 
@@ -130,9 +129,11 @@ function renderChannel(slug, page) {
                     // mp4, mp3
                     case "Attachment":
                       return `
-                      <img class="Block_img dithered" src="${block.image.large.url}"/>
-                      <input type="text" style="font-size: 30px;" value="${block.description}"/>
-                      <p class="Block_text">${block.content}</p>
+                      <div class="img_container"><img class="Block_img dithered" src="${block.image.large.url}"/></div>
+                      <textarea name="note" rows="4" cols="50">
+${block.title}
+
+${block.description}</textarea>
                       `;
 
                     // basic: text
@@ -144,9 +145,11 @@ function renderChannel(slug, page) {
                     // basic: image
                     case "Image":
                       return `
-                      <img class="Block_img dithered" src="${block.image.large.url}"/>
-                      <input type="text" style="font-size: 30px;" value="${block.description}"/>
-                      <p class="Block_text">${block.content}</p>
+                      <div class="img_container"><img class="Block_img dithered" src="${block.image.large.url}"/></div>
+                      <textarea name="note" rows="4" cols="50">
+${block.title}
+
+${block.description}</textarea>
                       `;
                       
                     // iframe: Youtube  
