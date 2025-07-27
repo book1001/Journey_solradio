@@ -16,7 +16,7 @@
       width: 100%;
     }
 
-    #printed {
+    #targetArea {
       width: 100%;
       /* border: 10px solid black; */
     }
@@ -32,11 +32,11 @@
         display: none !important;
       }
 
-      #printed, #printed * {
+      #targetArea, #targetArea * {
         display: block !important;
       }
 
-      #printed {
+      #targetArea {
         position: absolute;
         top: 0;
         left: 0;
@@ -51,81 +51,22 @@
     }
   </style>
 </head>
+
 <body>
-  <div id="printed">
-    <h1>Sol–Ra☀︎dio</h1>
-    <!-- <img class="dithered d1" src="img/PHO00014.jpg">
-    <img class="dithered d2" src="img/PHO00014_2.jpg"> -->
-    <img class="dithered d2" src="img/test.jpg">
+  <div id="targetArea" class="ARENA-container">
+    <h1>Sol–Ra.dio</h1>
+  </div>
+  <div class="TV-btns">
+    <button id="btn-P" disabled><</button>
+    <div class="btn-pages"></div>
+    <button id="btn-N">></button>
+    <!-- <button onclick="SET_mono()">mono</button> -->
   </div>
 
   <button onclick="window.print()">🖨 프린트하기</button>
   
-  <script>
-    function floydSteinbergDither(image, callback) {
-      const targetWidth = 480;
-      const scale = targetWidth / image.width;
-      const targetHeight = Math.floor(image.height * scale);
 
-      const canvas = document.createElement('canvas');
-      canvas.width = targetWidth;
-      canvas.height = targetHeight;
-      const ctx = canvas.getContext('2d');
+  <script type="text/javascript" src="tv.js"></script>
 
-      ctx.drawImage(image, 0, 0, targetWidth, targetHeight);
-
-      const imageData = ctx.getImageData(0, 0, targetWidth, targetHeight);
-      const data = imageData.data;
-      const gray = new Array(targetWidth * targetHeight);
-
-      // Convert to grayscale
-      for (let i = 0; i < data.length; i += 4) {
-        const r = data[i], g = data[i + 1], b = data[i + 2];
-        gray[i / 4] = 0.299 * r + 0.587 * g + 0.114 * b;
-      }
-
-      // Floyd–Steinberg dithering
-      for (let y = 0; y < targetHeight; y++) {
-        for (let x = 0; x < targetWidth; x++) {
-          const i = y * targetWidth + x;
-          const old = gray[i];
-          const newPixel = old < 128 ? 0 : 255;
-          const error = old - newPixel;
-          gray[i] = newPixel;
-
-          if (x + 1 < targetWidth) gray[i + 1] += error * 7 / 16;
-          if (x > 0 && y + 1 < targetHeight) gray[i + targetWidth - 1] += error * 3 / 16;
-          if (y + 1 < targetHeight) gray[i + targetWidth] += error * 5 / 16;
-          if (x + 1 < targetWidth && y + 1 < targetHeight) gray[i + targetWidth + 1] += error * 1 / 16;
-        }
-      }
-
-      // Apply dithered grayscale to image data
-      for (let i = 0; i < data.length; i += 4) {
-        const v = gray[i / 4] < 128 ? 0 : 255;
-        data[i] = data[i + 1] = data[i + 2] = v;
-        data[i + 3] = 255;
-      }
-
-      ctx.putImageData(imageData, 0, 0);
-      callback(canvas.toDataURL());
-    }
-
-    window.onload = function () {
-      const imgs = document.querySelectorAll('.dithered');
-      imgs.forEach(img => {
-        const originalSrc = img.src;
-        const image = new Image();
-        image.crossOrigin = 'anonymous';
-        image.src = originalSrc;
-
-        image.onload = function () {
-          floydSteinbergDither(image, (ditheredDataURL) => {
-            img.src = ditheredDataURL;
-          });
-        };
-      });
-    };
-  </script>
 </body>
 </html>
