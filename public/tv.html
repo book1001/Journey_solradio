@@ -46,7 +46,8 @@
 
       h1 {
       font-size: 80px;
-    }
+      }
+
     }
   </style>
 </head>
@@ -54,13 +55,14 @@
   <div id="printed">
     <h1>Sol–Ra☀︎dio</h1>
     <img class="dithered d1" src="img/PHO00014.jpg">
+    <img class="dithered d2" src="img/PHO00014_2.jpg">
   </div>
 
   <button onclick="window.print()">🖨 프린트하기</button>
   
   <script>
     function floydSteinbergDither(image, callback) {
-      const targetWidth = 300;
+      const targetWidth = 350;
       const scale = targetWidth / image.width;
       const targetHeight = Math.floor(image.height * scale);
 
