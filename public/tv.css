@@ -72,10 +72,8 @@ h1 {
   z-index: 3;
 }
 
-.btn-pages {
-  button {
-    width: 100%;
-  }
+.btn-pages button {
+  width: 100%;
 }
 
 
