@@ -637,7 +637,7 @@ function renderChannel(slug, page) {
   let url = `https://api.are.na/v2/channels/${slug}/contents?t=${time}&direction=desc&sort=position&page=${page}&per=${per}`;
 
   const asciiArtList = [
-`wwwwwwwwwwwwwwwwwwwwww
+`wwwwwwwwwwwwwwwwwwwwwwwwwww
    ,_('--,
      (.--; ,--')_,
          | ;--.)
@@ -645,7 +645,7 @@ function renderChannel(slug, page) {
         \|\|/ .-.
 `,
 
-`wwwwwwwwwwwwwwwwwwwwww
+`wwwwwwwwwwwwwwwwwwwwwwwwwww
        _ _
       (_\_)
      (__<_{}
@@ -656,7 +656,7 @@ function renderChannel(slug, page) {
         |/
    ,.,.,|.,.,.
 `,
-`wwwwwwwwwwwwwwwwwwwwww
+`wwwwwwwwwwwwwwwwwwwwwwwwwww
    __   _
  _(  )_( )_
 (_   _    _)
@@ -694,10 +694,11 @@ function renderChannel(slug, page) {
                     case "Attachment":
                       return `
                       <div class="img_container"><img class="Block_img dithered" src="${block.image.large.url}"/></div>
-                      <textarea id="note" rows="4">
+                      <textarea id="note" rows="3">
 ${block.title}
 
-${block.description}</textarea>
+${block.description}
+${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}</textarea>
                       `;
 
                     // basic: text
@@ -714,7 +715,7 @@ ${block.description}</textarea>
                       <img class="Block_img dithered" src="${block.image.large.url}"/>
                       </div>
                       <audio autoplay src="sound/noise_short.mp3"></audio>
-                      <textarea id="note" rows="4">
+                      <textarea id="note" rows="3">
 ${block.title}
 
 ${block.description}

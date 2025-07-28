@@ -16,11 +16,9 @@ body {
   border-top: 1px solid black;
 }
 
-.Play-btns {
-  button {
-    background: none;
-    border: none;
-  }
+.Play-btns button {
+  background: none;
+  border: none;
 }
 
 
