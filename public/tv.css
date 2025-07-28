@@ -5,6 +5,7 @@ body {
 }
 
 .Block {
+  width: 100%;
   mix-blend-mode: multiply;
 }
 
@@ -136,6 +137,8 @@ button:disabled {
   }
 
   textarea {
+    height: 1310px;
+    margin: 25px 0 15px 0;
     font-size: 36px;
   }
 
