@@ -1,4 +1,36 @@
 // ==================================================================
+// 이전 캐시 제거
+// ==================================================================
+const CACHE_NAME = 'your-cache-v2'; // 버전을 변경해서 강제 갱신
+
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll([
+        '/', // 필요한 경로들
+        '/index.html',
+        '/main.css',
+        '/main.js',
+      ]);
+    })
+  );
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames =>
+      Promise.all(
+        cacheNames.map(name => {
+          if (name !== CACHE_NAME) {
+            return caches.delete(name); // 이전 캐시 제거
+          }
+        })
+      )
+    )
+  );
+});
+
+// ==================================================================
 // Playlist
 // ==================================================================
 function isAndroid() {
@@ -643,7 +675,7 @@ ${block.description}</textarea>
                     case "Image":
                       return `
                       <div class="img_container">
-                      <img class="Block_img noise" src="img_tv/noise.gif">
+                      <img class="Block_img noise" src="img_tv/noise_4.gif">
                       <img class="Block_img dithered" src="${block.image.large.url}"/>
                       </div>
                       <audio autoplay src="sound/noise_short.mp3"></audio>
