@@ -666,7 +666,7 @@ function renderChannel(slug, page) {
                     case "Attachment":
                       return `
                       <div class="img_container"><img class="Block_img dithered" src="${block.image.large.url}"/></div>
-                      <textarea id="note" rows="5">
+                      <textarea id="note" rows="4">
 ${block.title}
 
 ${block.description}</textarea>
@@ -686,7 +686,7 @@ ${block.description}</textarea>
                       <img class="Block_img dithered" src="${block.image.large.url}"/>
                       </div>
                       <audio autoplay src="sound/noise_short.mp3"></audio>
-                      <textarea id="note" rows="5">
+                      <textarea id="note" rows="4">
 ${block.title}
 
 ${block.description}</textarea>
