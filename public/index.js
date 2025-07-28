@@ -637,19 +637,16 @@ function renderChannel(slug, page) {
   let url = `https://api.are.na/v2/channels/${slug}/contents?t=${time}&direction=desc&sort=position&page=${page}&per=${per}`;
 
   const asciiArtList = [
-`wwwwwwwwwwwwwwwwwwwwwwwwwww
+`wwwwwwwwwwwwwwwwwwwwwwwwww
    ,_('--,
      (.--; ,--')_,
          | ;--.)
      .-. |.| .-.
         \|\|/ .-.
-wwwwwwwwwwwwwwwwwwwwwwwwwww
-are.na/halim-lee/sol-ra-dio
-wwwwwwwwwwwwwwwwwwwwwwwwwww
 Pic.32
 `,
 
-`wwwwwwwwwwwwwwwwwwwwwwwwwww
+`wwwwwwwwwwwwwwwwwwwwwwwwww
        _ _
       (_\_)
      (__<_{}
@@ -659,20 +656,15 @@ Pic.32
        \|//
         |/
    ,.,.,|.,.,.
-wwwwwwwwwwwwwwwwwwwwwwwwwww
-are.na/halim-lee/sol-ra-dio
-wwwwwwwwwwwwwwwwwwwwwwwwwww
-Pic.32
+wwwwwwwwwwwwwwwwwwwwwwwwww
+Sol–Ra.dio        Pic.32
 `,
-`wwwwwwwwwwwwwwwwwwwwwwwwwww
+`wwwwwwwwwwwwwwwwwwwwwwwwww
    __   _
  _(  )_( )_
 (_   _    _)
   (_) (__)
-wwwwwwwwwwwwwwwwwwwwwwwwwww
-are.na/halim-lee/sol-ra-dio
-wwwwwwwwwwwwwwwwwwwwwwwwwww
-Pic.32
+Sol–Ra.dio ––––––––– Pic.32
 `,
   ];
 
