@@ -1,32 +1,39 @@
 // ==================================================================
-// 이전 캐시 제거
+// 캐시
 // ==================================================================
-const CACHE_NAME = 'your-cache-v2'; // 버전을 변경해서 강제 갱신
+const CACHE_NAME = "music-player-cache-v1";
+const urlsToCache = [
+  "/",
+  "/index.html",
+  "/manifest.json",
+  "/index.css",
+  "/index.js",
+  // 필요한 기타 정적 자원들
+];
 
-self.addEventListener('install', event => {
+// 설치 시 캐시 저장
+self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll([
-        '/', // 필요한 경로들
-        '/index.html',
-        '/main.css',
-        '/main.js',
-      ]);
-    })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
   );
 });
 
-self.addEventListener('activate', event => {
+// 활성화 시 이전 캐시 제거
+self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then(cacheNames =>
-      Promise.all(
-        cacheNames.map(name => {
-          if (name !== CACHE_NAME) {
-            return caches.delete(name); // 이전 캐시 제거
-          }
-        })
-      )
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(key => key !== CACHE_NAME)
+      .map(key => caches.delete(key)))
     )
+  );
+});
+
+// 네트워크 요청 가로채기 (캐시 우선 전략)
+self.addEventListener("fetch", event => {
+  event.respondWith(
+    caches.match(event.request).then(response => {
+      return response || fetch(event.request);
+    })
   );
 });
 
@@ -527,7 +534,7 @@ function highlightPlayingTrack(trackUri) {
 let slug = 'sol-ra-dio';
 let page = 1; // Initialize the page number
 let totalPages = 1; // Initialize total pages
-let buttonsPerPage = 20;
+let buttonsPerPage = 17;
 
 
 
