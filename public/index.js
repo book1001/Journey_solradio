@@ -643,6 +643,10 @@ function renderChannel(slug, page) {
          | ;--.)
      .-. |.| .-.
         \|\|/ .-.
+wwwwwwwwwwwwwwwwwwwwwwwwwww
+are.na/halim-lee/sol-ra-dio
+wwwwwwwwwwwwwwwwwwwwwwwwwww
+Pic.32
 `,
 
 `wwwwwwwwwwwwwwwwwwwwwwwwwww
@@ -655,12 +659,20 @@ function renderChannel(slug, page) {
        \|//
         |/
    ,.,.,|.,.,.
+wwwwwwwwwwwwwwwwwwwwwwwwwww
+are.na/halim-lee/sol-ra-dio
+wwwwwwwwwwwwwwwwwwwwwwwwwww
+Pic.32
 `,
 `wwwwwwwwwwwwwwwwwwwwwwwwwww
    __   _
  _(  )_( )_
 (_   _    _)
   (_) (__)
+wwwwwwwwwwwwwwwwwwwwwwwwwww
+are.na/halim-lee/sol-ra-dio
+wwwwwwwwwwwwwwwwwwwwwwwwwww
+Pic.32
 `,
   ];
 
