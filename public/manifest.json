@@ -1,11 +1,11 @@
 {
-  "name": "My Music Player",
-  "short_name": "MusicPlayer",
+  "name": "Sol-Ra.dio",
+  "short_name": "Sol-Ra.dio",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#1DB954",
-  "description": "Spotify playlist player app",
+  "theme_color": "lemonchiffon",
+  "description": "Sol-Ra.dio",
   "icons": [
     {
       "src": "icons/icon-192.png",

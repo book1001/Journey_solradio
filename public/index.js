@@ -534,7 +534,7 @@ function highlightPlayingTrack(trackUri) {
 let slug = 'sol-ra-dio';
 let page = 1; // Initialize the page number
 let totalPages = 1; // Initialize total pages
-let buttonsPerPage = 17;
+let buttonsPerPage = 15;
 
 
 
@@ -666,7 +666,7 @@ function renderChannel(slug, page) {
                     case "Attachment":
                       return `
                       <div class="img_container"><img class="Block_img dithered" src="${block.image.large.url}"/></div>
-                      <textarea id="note" rows="4">
+                      <textarea id="note" rows="5">
 ${block.title}
 
 ${block.description}</textarea>
@@ -686,7 +686,7 @@ ${block.description}</textarea>
                       <img class="Block_img dithered" src="${block.image.large.url}"/>
                       </div>
                       <audio autoplay src="sound/noise_short.mp3"></audio>
-                      <textarea id="note" rows="4">
+                      <textarea id="note" rows="5">
 ${block.title}
 
 ${block.description}</textarea>
