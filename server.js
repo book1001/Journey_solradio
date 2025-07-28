@@ -59,7 +59,6 @@ app.get("/callback", (req, res) => {
       <script>
         sessionStorage.setItem("access_token", "${body.access_token}");
         window.location.href = "/";
-        window.location.href = "/playlist.html";
       </script>
     `);
   });

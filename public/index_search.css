@@ -13,45 +13,44 @@
 /* ============================================================= */
 html,body {
   margin: 0;
-  padding: 0;
-  overflow: hidden;
+  padding: 4px 10px;
 }
 
 body {
   background: lemonchiffon;
+  /* background: lightgray; */
 }
 
-::-webkit-scrollbar { 
-  width: 0;
+::-webkit-scrollbar { /* width */
+  width: var(--scrollbar-width);
+}
+::-webkit-scrollbar-track { /* Track */
+  background: transparent;
+}
+::-webkit-scrollbar-thumb { /* Handle */
+  background: rgb(0,0,0,1);
+  background-clip: padding-box;
+  border-top: 0px solid transparent;
+  border-right: var(--scrollbar-right) solid transparent;
+  border-bottom: 0px solid transparent;
+  border-left: var(--scrollbar-left) solid transparent;
 }
 
-
-.body_container {  
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto auto auto 1fr;
-  grid-auto-columns: 1fr;
-  grid-auto-rows: 1fr;
-  gap: 0;
-  grid-auto-flow: row;
-  grid-template-areas:
-    "."
-    "."
-    "."
-    ".";
-  background: lemonchiffon;
-}
 
 
 /* input, button {
   padding: 0.5rem;
   font-size: 1rem;
 } */
+
+#searchBtn {
+  background: none;
+  border: none;
+}
+
+#result {
+  margin-top: 1rem;
+}
 
 .list {
   display: flex;

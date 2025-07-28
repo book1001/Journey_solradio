@@ -225,21 +225,6 @@ ${block.description}</textarea>
 //   "connected_by_user_slug": "chris-sherron"
 
 
-// =============================================================
-// TV: Settings
-// =============================================================
-
-function SET_mono() {
-  const videoElement = document.querySelector('.Block_video');
-  const currentFilter = videoElement.style.filter;
-
-  if (currentFilter === 'grayscale(100%)' || currentFilter === '') {
-      videoElement.style.filter = 'grayscale(0%)';
-  } else {
-      videoElement.style.filter = 'grayscale(100%)';
-  }
-}
-
 
 // =============================================================
 // Dithering

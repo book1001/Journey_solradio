@@ -1,6 +1,10 @@
+// ==================================================================
+// Playlist
+// ==================================================================
 function isAndroid() {
   return /Android/i.test(navigator.userAgent);
 }
+
 
 async function fetchWithRetry(url, options = {}) {
   let token = sessionStorage.getItem("access_token");
@@ -28,7 +32,6 @@ async function fetchWithRetry(url, options = {}) {
 
   return res;
 }
-
 
 async function searchTracks() {
   const query = document.getElementById("searchInput").value;
@@ -94,7 +97,6 @@ async function searchTracks() {
   }
 }
 
-
 async function loadPlaylistTracks() {
   try {
     const res = await fetchWithRetry("/playlist-tracks");
@@ -129,15 +131,19 @@ async function loadPlaylistTracks() {
 }
 
 
-
 document.getElementById("searchBtn").addEventListener("click", searchTracks);
 
-// 페이지 로드 시 재생목록 불러오기
-window.onload = loadPlaylistTracks;
+window.onload = () => {
+  loadPlaylistTracks();           // 기존 onload 함수 1
+  renderTitle(slug);              // 기존 onload 함수 2
+  fetchTotalPages(slug).then(() => {
+    renderChannel(slug, page);
+    btnPages();
+    btnPageCounter();
+  });
+};
 
-// 📁 public/playback.js
-
-
+// Spotify SDK 초기화
 window.onSpotifyWebPlaybackSDKReady = () => {
   const token = sessionStorage.getItem("access_token");
   if (!token) {
@@ -157,33 +163,28 @@ window.onSpotifyWebPlaybackSDKReady = () => {
   let isPaused = true;
   let pausedPositionMs = 0;
   let lastTrackUri = null;
+  let isAdvancing = false;
 
   player.addListener('ready', ({ device_id }) => {
     console.log("✅ Web Playback SDK 연결됨 (Device ID):", device_id);
     currentDeviceId = device_id;
   });
 
-  let isAdvancing = false;
-
   if (!isAndroid()) {
     player.addListener('player_state_changed', (state) => {
       if (!state || !state.track_window?.current_track) return;
 
-      const { paused, position, duration, track_window } = state;
+      const { paused, position, track_window } = state;
       const currentTrackUri = track_window.current_track.uri;
 
       console.log("🎧 상태 변경 감지:", currentTrackUri, "position:", position, "paused:", paused);
-
       highlightPlayingTrack(currentTrackUri);
 
-      // 🔒 이미 다음 곡으로 넘어가는 중이면 중복 실행 방지
       if (isAdvancing) return;
 
       const songEnded = paused && position === 0;
-
       if (songEnded && playlistUris.length > 0) {
-        isAdvancing = true; // 🔒 다음 곡 전환 중
-
+        isAdvancing = true;
         currentTrackIndex = (currentTrackIndex + 1) % playlistUris.length;
         const nextTrack = playlistUris[currentTrackIndex];
         lastTrackUri = nextTrack;
@@ -191,7 +192,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         console.log("⏭ 다음 곡 재생:", nextTrack, "index:", currentTrackIndex);
 
         playTrack(nextTrack).then(() => {
-          isAdvancing = false; // ✅ 전환 완료 후 해제
+          isAdvancing = false;
         }).catch(err => {
           console.error("다음 곡 재생 실패:", err);
           isAdvancing = false;
@@ -202,22 +203,17 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     });
   }
 
-
-
   player.connect();
 
   async function playTrack(trackUri, offsetMs = 0) {
     const android = isAndroid();
-
     const body = {
       uris: [trackUri],
-      position_ms: offsetMs // 항상 명시적으로 지정
+      position_ms: offsetMs
     };
-
     const url = android
       ? `https://api.spotify.com/v1/me/player/play`
       : `https://api.spotify.com/v1/me/player/play?device_id=${currentDeviceId}`;
-
     try {
       const res = await fetch(url, {
         method: "PUT",
@@ -227,87 +223,52 @@ window.onSpotifyWebPlaybackSDKReady = () => {
           "Authorization": `Bearer ${token}`,
         },
       });
-
-      if (!res.ok) {
-        const err = await res.text();
-        throw new Error("재생 실패: " + err);
-      }
-
+      if (!res.ok) throw new Error("재생 실패: " + await res.text());
       console.log(`🎵 재생 시작: ${trackUri} (position_ms: ${offsetMs})`);
-
       highlightPlayingTrack(trackUri);
-
-      if (android) {
-        startPollingPlayerState();
-      }
-
+      if (android) startPollingPlayerState();
     } catch (err) {
       alert("재생 중 오류: " + err.message);
     }
   }
 
-
   window.resumeTrack = async () => {
     const android = isAndroid();
-    const uris = playlistUris;
-    const index = currentTrackIndex;
-
-    if (!uris || uris.length === 0 || index < 0) {
-      alert("재생할 트랙이 없습니다.");
-      return;
-    }
-
     const body = {
-      uris: uris,
-      offset: { position: index },
+      uris: playlistUris,
+      offset: { position: currentTrackIndex },
       position_ms: pausedPositionMs,
     };
-
     const url = android
       ? "https://api.spotify.com/v1/me/player/play"
       : `https://api.spotify.com/v1/me/player/play?device_id=${currentDeviceId}`;
-
     try {
       const res = await fetch(url, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${sessionStorage.getItem("access_token")}`,
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(body),
       });
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error("재생 실패: " + errorText);
-      }
-
-      console.log(`▶ 이어서 전체 재생: index=${index}, position=${pausedPositionMs}`);
+      if (!res.ok) throw new Error("재생 실패: " + await res.text());
+      console.log(`▶ 이어서 전체 재생: index=${currentTrackIndex}, position=${pausedPositionMs}`);
       if (android) startPollingPlayerState();
-
     } catch (err) {
       alert("이어 재생 실패: " + err.message);
     }
   };
 
-
-
-
-
   window.playAllTracks = (uris) => {
     playlistUris = uris;
     currentTrackIndex = 0;
-
-    const android = isAndroid();
-
-    if (android) {
-      stopPollingPlayerState(); // 중복 방지
+    if (isAndroid()) {
+      stopPollingPlayerState();
       playPlaylistOnAndroid(playlistUris, currentTrackIndex);
     } else {
       playTrack(playlistUris[currentTrackIndex]);
     }
   };
-
 
   async function playPlaylistOnAndroid(uris, index = 0) {
     try {
@@ -315,7 +276,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${sessionStorage.getItem("access_token")}`,
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
           uris: uris,
@@ -323,58 +284,42 @@ window.onSpotifyWebPlaybackSDKReady = () => {
           position_ms: 0,
         }),
       });
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error("재생 실패: " + errorText);
-      }
-
+      if (!res.ok) throw new Error("재생 실패: " + await res.text());
       console.log("▶️ Android용 전체 재생 시작됨");
-      startPollingPlayerState(); // 자동 재생 추적 시작
-
+      startPollingPlayerState();
     } catch (err) {
       alert("Android 재생 중 오류: " + err.message);
     }
   }
-
-
 
   window.pauseTrack = async () => {
     const android = isAndroid();
     const url = android
       ? "https://api.spotify.com/v1/me/player/pause"
       : `https://api.spotify.com/v1/me/player/pause?device_id=${currentDeviceId}`;
-
     try {
-      // 현재 위치 저장
       const res = await fetch("https://api.spotify.com/v1/me/player", {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
+        headers: { "Authorization": `Bearer ${token}` },
       });
       const data = await res.json();
-      pausedPositionMs = data.progress_ms || 0; // 👉 저장!
-      
+      pausedPositionMs = data.progress_ms || 0;
       await fetch(url, {
         method: "PUT",
         headers: { "Authorization": `Bearer ${token}` },
       });
-
       console.log("⏸ 일시 중지 @", pausedPositionMs);
     } catch (err) {
       alert("일시 중지 실패: " + err.message);
     }
   };
 
-
   window.stopTrack = async () => {
     await window.pauseTrack();
-    stopPollingPlayerState(); // 안드로이드일 경우 polling 종료
+    stopPollingPlayerState();
     playlistUris = [];
     currentTrackIndex = 0;
     console.log("⏹ 재생 중지");
   };
-
 
   window.playTrackAtIndex = (index) => {
     if (index < 0 || index >= playlistUris.length) {
@@ -382,14 +327,12 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       return;
     }
     currentTrackIndex = index;
-
     if (isAndroid()) {
       playPlaylistOnAndroid(playlistUris, currentTrackIndex);
     } else {
       playTrack(playlistUris[currentTrackIndex]);
     }
   };
-
 };
 
 
@@ -453,6 +396,7 @@ function stopPollingPlayerState() {
   }
 }
 
+
 // ==========================================================================================
 
 let isPlaying = false;
@@ -501,14 +445,6 @@ function updatePlayAllButtonText() {
 }
 
 
-// document.getElementById("pauseBtn").addEventListener("click", () => {
-//   window.pauseTrack();
-// });
-
-// document.getElementById("stopBtn").addEventListener("click", () => {
-//   window.stopTrack();
-// });
-
 // 재생목록에서 특정 곡 클릭 시
 function loadPlaylistTracks() {
   fetch("/playlist-tracks")
@@ -552,7 +488,301 @@ function highlightPlayingTrack(trackUri) {
 }
 
 
-// 초기 로드 시
-window.onload = () => {
-  loadPlaylistTracks();
-};
+
+// ==========================================================================================
+// TV
+// ==========================================================================================
+let slug = 'sol-ra-dio';
+let page = 1; // Initialize the page number
+let totalPages = 1; // Initialize total pages
+let buttonsPerPage = 20;
+
+
+
+// =============================================================
+// TV: btns
+// =============================================================
+
+document.getElementById('btn-N').addEventListener('click', function() {
+  page++;
+  renderChannel(slug, page);
+  btnPages();
+  btnPageCounter();
+});
+
+document.getElementById('btn-P').addEventListener('click', function() {
+  page--;
+  renderChannel(slug, page);
+  btnPages();
+  btnPageCounter();
+});
+
+function btnPageCounter() {
+  document.getElementById('btn-P').disabled = (page === 1);
+  document.getElementById('btn-N').disabled = (page === totalPages);
+}
+
+function btnPages() {
+  const paginationContainer = document.querySelector('.btn-pages');
+
+  // 👉 기존 숫자 버튼만 제거 (이전/다음 버튼은 남기기)
+  const buttons = paginationContainer.querySelectorAll('button');
+  buttons.forEach(btn => {
+    if (!['btn-P', 'btn-N'].includes(btn.id)) {
+      paginationContainer.removeChild(btn);
+    }
+  });
+
+  // 페이지 버튼 생성
+  const startPage = Math.max(1, page - Math.floor(buttonsPerPage / 2));
+  const endPage = Math.min(totalPages, startPage + buttonsPerPage - 1);
+
+  // 👉 이전 버튼 뒤에 페이지 번호 삽입
+  const nextBtn = document.getElementById('btn-N');
+  for (let i = startPage; i <= endPage; i++) {
+    const button = document.createElement('button');
+    button.textContent = i;
+    button.disabled = (i === page);
+    button.addEventListener('click', function() {
+      page = i;
+      renderChannel(slug, page);
+      btnPages();
+      btnPageCounter();
+    });
+    paginationContainer.insertBefore(button, nextBtn); // 다음 버튼 앞에 추가
+  }
+}
+
+
+
+
+
+// =============================================================
+// API: Basic
+// =============================================================
+
+function renderTitle(slug) {
+  // Fetch the channel title from the Are.na API
+  let url = `https://api.are.na/v2/channels/${slug}/collaborators`;
+
+  fetch(url)
+    .then(response => response.json())
+    .then(data => document.title = data.channel_title);
+}
+
+function fetchTotalPages(slug) {
+  let url = `https://api.are.na/v2/channels/${slug}`;
+  return fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      let totalContents = data.length; // Get total contents
+      let per = 1; // Number of contents per page
+      totalPages = Math.ceil(totalContents / per); // Calculate total pages
+    });
+}
+
+
+
+// =============================================================
+// API: Content
+// =============================================================
+
+function renderChannel(slug, page) {
+  // Add a loading message
+  // let loading = `Loading...`;
+  // document.body.innerHTML = loading;      
+
+  // Fetch the channel data from the Are.na API
+  let time = Date.now();
+  let per = 1;
+  let url = `https://api.are.na/v2/channels/${slug}/contents?t=${time}&direction=desc&sort=position&page=${page}&per=${per}`;
+
+
+  fetch(url, {cache: 'no-cache'})
+    .then(response => response.json())
+    .then(channel => {
+
+      // Channel Info
+      // document.body.innerHTML = `
+      let elements = `${channel.contents.map(block => {
+            // We are going to return HTML, mixed in with the data from the block.
+            return `
+              <div class="Block ${block.class}">
+
+                ${(() => {
+                  if (block.title && block.class !== 'Link' && block.class !== 'Channel') {
+                    return `
+                    `;
+                  }
+
+                  return ``;
+                })()}
+
+
+                ${(() => {
+                  // Return a different bit of HTML, depending on what type of block it is
+                  switch (block.class) {
+
+                    // mp4, mp3
+                    case "Attachment":
+                      return `
+                      <div class="img_container"><img class="Block_img dithered" src="${block.image.large.url}"/></div>
+                      <textarea name="note" rows="4">
+${block.title}
+
+${block.description}</textarea>
+                      `;
+
+                    // basic: text
+                    case "Text":
+                      return `
+                      <p class="Block_text">${block.content}</p>
+                      `;
+
+                    // basic: image
+                    case "Image":
+                      return `
+                      <div class="img_container">
+                      <img class="Block_img noise" src="img_tv/noise.gif">
+                      <img class="Block_img dithered" src="${block.image.large.url}"/>
+                      </div>
+                      <audio autoplay src="sound/noise_short.mp3"></audio>
+                      <textarea name="note" rows="4">
+${block.title}
+
+${block.description}</textarea>
+                      `;
+                      
+                    // iframe: Youtube  
+                    case "Media":
+                      return `
+                      <div class="Block_loop">
+                        <img class="Block_loop_img_cover" src="img/noise.gif">
+                        <img class="Block_loop_img" style="transform: translate(0, -100%);" src="${block.image.large.url}">
+                        <img class="Block_loop_img" src="${block.image.large.url}">
+                        <img class="Block_loop_img" style="transform: translate(0, 100%);" src="${block.image.large.url}">
+                        <audio autoplay src="sound/noise_short.mp3"></audio>
+                      </div>
+                      `;
+
+                    // website
+                    case "Link":
+                      return `
+                      <div class="Block_loop">
+                        <img class="Block_loop_img_cover" src="img/noise.gif">
+                        <img class="Block_loop_img" style="transform: translate(0, -100%);" src="${block.image.large.url}">
+                        <img class="Block_loop_img" src="${block.image.large.url}">
+                        <img class="Block_loop_img" style="transform: translate(0, 100%);" src="${block.image.large.url}">
+                        <audio autoplay src="sound/noise_short.mp3"></audio>
+                      </div>
+                      `;
+                      
+                    case "Channel":
+                      return `
+                      `;
+                  }
+                })()}
+              </div>
+            `;
+          }).join("")}`;
+    
+    let contents = document.getElementsByClassName("ARENA-container")[0];
+    contents.innerHTML = elements; // Clear existing content and add new content
+    applyDithering();
+  })
+}
+
+
+//   "id": 76969,
+//   "title": "The Working Sheepdog ( Border Collies ) in training",
+//   "updated_at": "2020-04-07T21:59:29.806Z",
+//   "created_at": "2013-02-12T22:40:15.696Z",
+//   "state": "available",
+//   "comment_count": 0,
+//   "generated_title": "The Working Sheepdog ( Border Collies ) in training",
+//   "content_html": "",
+//   "description_html": "<p>Border Collie Collies working sheepdog Sheep dogs in training Scotland</p>",
+//   "visibility": "public",
+//   "content": "",
+//   "description": "Border Collie Collies working sheepdog Sheep dogs in training Scotland",
+//   "source": {},
+//   "image": {},
+//   "embed": {},
+//   "attachment": null,
+//   "metadata": null,
+//   "base_class": "Block",
+//   "class": "Media",
+//   "user": {},
+//   "position": 1,
+//   "selected": false,
+//   "connection_id": 716562,
+//   "connected_at": "2016-05-16T00:59:42.901Z",
+//   "connected_by_user_id": 128,
+//   "connected_by_username": "Chris Sherrón",
+//   "connected_by_user_slug": "chris-sherron"
+
+
+
+// =============================================================
+// Dithering
+// =============================================================
+function floydSteinbergDither(image, callback) {
+  const targetWidth = 450;
+  const scale = targetWidth / image.width;
+  const targetHeight = Math.floor(image.height * scale);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = targetWidth;
+  canvas.height = targetHeight;
+  const ctx = canvas.getContext('2d');
+
+  ctx.drawImage(image, 0, 0, targetWidth, targetHeight);
+
+  const imageData = ctx.getImageData(0, 0, targetWidth, targetHeight);
+  const data = imageData.data;
+  const gray = new Array(targetWidth * targetHeight);
+
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i], g = data[i + 1], b = data[i + 2];
+    gray[i / 4] = 0.299 * r + 0.587 * g + 0.114 * b;
+  }
+
+  for (let y = 0; y < targetHeight; y++) {
+    for (let x = 0; x < targetWidth; x++) {
+      const i = y * targetWidth + x;
+      const old = gray[i];
+      const newPixel = old < 128 ? 0 : 255;
+      const error = old - newPixel;
+      gray[i] = newPixel;
+
+      if (x + 1 < targetWidth) gray[i + 1] += error * 7 / 16;
+      if (x > 0 && y + 1 < targetHeight) gray[i + targetWidth - 1] += error * 3 / 16;
+      if (y + 1 < targetHeight) gray[i + targetWidth] += error * 5 / 16;
+      if (x + 1 < targetWidth && y + 1 < targetHeight) gray[i + targetWidth + 1] += error * 1 / 16;
+    }
+  }
+
+  for (let i = 0; i < data.length; i += 4) {
+    const v = gray[i / 4] < 128 ? 0 : 255;
+    data[i] = data[i + 1] = data[i + 2] = v;
+    data[i + 3] = 255;
+  }
+
+  ctx.putImageData(imageData, 0, 0);
+  callback(canvas.toDataURL());
+}
+
+// 렌더링 이후 디더링 적용
+function applyDithering() {
+  const images = document.querySelectorAll('img.dithered');
+  images.forEach(img => {
+    const image = new Image();
+    image.crossOrigin = 'anonymous';
+    image.src = img.src;
+    image.onload = () => {
+      floydSteinbergDither(image, dataURL => {
+        img.src = dataURL;
+      });
+    };
+  });
+}

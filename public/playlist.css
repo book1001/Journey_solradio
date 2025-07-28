@@ -3,6 +3,53 @@ body {
   margin: 20px;
 }
 
+.Play-btns {
+  display: grid; 
+  grid-auto-columns: 1fr; 
+  grid-auto-rows: 1fr; 
+  grid-template-columns: auto auto 1fr auto auto;
+  grid-template-rows: 1fr; 
+  gap: 0px 10px; 
+  grid-template-areas: 
+    ". . . ."; 
+  padding: 16px 12px;
+  border-top: 1px solid black;
+}
+
+.Play-btns {
+  button {
+    background: none;
+    border: none;
+  }
+}
+
+
+#playlistContainer {    
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-top: 1px solid black;
+}
+
+input[type="text" i] {
+  background: none;
+  border-style: double;
+}
+
+#result {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 70%;
+  padding: 20px;
+  -webkit-transform: translate(-50%, -50%); /* Safari */
+  -moz-transform: translate(-50%, -50%); /* Firefox */
+  -ms-transform: translate(-50%, -50%); /* IE 9 */
+  -o-transform: translate(-50%, -50%); /* Opera */
+  transform: translate(-50%, -50%);
+  backdrop-filter: blur(10px);
+}
+
 #result > div, #playlistContainer > div {
   display: flex;
   align-items: center;
@@ -21,12 +68,14 @@ body {
 }
 
 .track-info {
+  padding: 0 12px;
   flex-grow: 1;
 }
 
 .playing {
-  background-color: #dff0ff;  /* 파란색 계열 배경 */
-  border-left: 4px solid #1db954;  /* Spotify 그린 강조 */
+  font-style: italic;
+  /* background-color: #a9a69d;  */
+  /* border-left: 4px solid #1db954;  */
 }
 
 
