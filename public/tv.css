@@ -80,14 +80,19 @@ h1 {
 .btn-pages {
   display: flex;
   justify-content: space-between;
-  mix-blend-mode: luminosity;
+  mix-blend-mode: multiply;
   z-index: 3;
 }
 
 .btn-pages button {
   width: 100%;
+  background: none;
+  border: none;
 }
 
+/* button:disabled {
+  background: lightgray;
+} */
 
 /* button {
   min-width: 22px;
