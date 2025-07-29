@@ -153,8 +153,7 @@ async function loadPlaylistTracks() {
       div.innerHTML = `
         <!-- <img src="${track.album.images[2]?.url || ''}" alt="album cover" /> -->
         <div class="track-info">
-          <p><strong>${track.name}</strong></p>
-          <p>${track.artists.map(a => a.name).join(", ")}</p>
+          <p>${track.name} | ${track.artists.map(a => a.name).join(", ")}</p>
         </div>
         <audio controls src="${track.preview_url || ''}"></audio>
       `;
@@ -499,8 +498,7 @@ function loadPlaylistTracks() {
         div.innerHTML = `
           <!-- <img src="${track.album.images[2]?.url || ''}" alt="album cover" /> -->
           <div class="track-info">
-            <p><strong>${track.name}</strong></p>
-            <p>${track.artists.map(a => a.name).join(", ")}</p>
+            <p>${track.name} | ${track.artists.map(a => a.name).join(", ")}</p>
           </div>
         `;
         div.addEventListener("click", () => {
