@@ -580,7 +580,7 @@ function btnPages() {
   const nextBtn = document.getElementById('btn-N');
   for (let i = startPage; i <= endPage; i++) {
     const button = document.createElement('button');
-    button.textContent = i;
+    button.textContent = (totalPages - i + 1);
     button.disabled = (i === page);
     button.addEventListener('click', function() {
       page = i;
@@ -657,7 +657,7 @@ Pic.32
         |/
    ,.,.,|.,.,.
 wwwwwwwwwwwwwwwwwwwwwwwwww
-Sol–Ra.dio        Pic.32
+Sol–Ra.dio          Pic.32
 `,
 `wwwwwwwwwwwwwwwwwwwwwwwwww
    __   _
@@ -723,7 +723,9 @@ ${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}</textarea>
 ${block.title}
 
 ${block.description}
-${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}</textarea>
+${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}
+
+Pic.${totalPages - page + 1}</textarea>
                       `;
                       
                     // iframe: Youtube  

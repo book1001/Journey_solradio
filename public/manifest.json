@@ -4,7 +4,7 @@
   "start_url": ".",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "lemonchiffon",
+  "theme_color": "#fffacd",
   "description": "Sol-Ra.dio",
   "icons": [
     {
