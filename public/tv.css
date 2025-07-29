@@ -80,6 +80,7 @@ h1 {
 .btn-pages {
   display: flex;
   justify-content: space-between;
+  mix-blend-mode: luminosity;
   z-index: 3;
 }
 
