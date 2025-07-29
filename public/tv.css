@@ -148,9 +148,10 @@ button:disabled {
   }
 
   textarea {
-    height: 2000px;
+    width: 90%;
+    height: 10000px;
     margin: 25px 0 15px 0;
-    font-size: 32px;
+    font-size: 33px;
   }
 
   h1 {
