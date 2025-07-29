@@ -713,8 +713,10 @@ ${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}</textarea>
                     case "Image":
                       return `
                       <div class="img_container">
+                      <div class="img_container2">
                       <img class="Block_img noise" src="img_tv/noise_4.gif">
                       <img class="Block_img dithered" src="${block.image.large.url}"/>
+                      </div>
                       </div>
                       <audio autoplay src="sound/noise_short.mp3"></audio>
                       <textarea id="note" rows="3">

@@ -16,6 +16,10 @@ body {
   overflow: hidden;
 }
 
+.img_container2 {
+  max-height: 700px;
+}
+
 img {
   display: block;
   width: 100%;
