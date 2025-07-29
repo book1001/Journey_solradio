@@ -66,7 +66,7 @@ input[type="text" i] {
 }
 
 .playing {
-  font-style: italic;
+  font-style: oblique;
   /* background-color: #a9a69d;  */
   /* border-left: 4px solid #1db954;  */
 }
