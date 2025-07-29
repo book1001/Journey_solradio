@@ -34,7 +34,7 @@ textarea {
   margin: 25px auto 15px auto;
   padding: 0;
   border: 0;
-  font-size: 14px;
+  font-size: 12px;
   text-align: center;
   resize: none;
 }
@@ -142,9 +142,9 @@ button:disabled {
   }
 
   textarea {
-    height: 1310px;
+    height: 2000px;
     margin: 25px 0 15px 0;
-    font-size: 34px;
+    font-size: 32px;
   }
 
   h1 {
