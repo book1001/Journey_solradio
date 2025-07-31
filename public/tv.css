@@ -36,10 +36,11 @@ textarea {
   display: block;
   /* width: 90%; */
   width: 210px;
-  margin: 25px auto 15px auto;
-  padding: 0;
+  margin: 0 auto 0 auto;
+  padding: 19px 0 20px 0;
   border: 0;
   font-size: 13px;
+  line-height: 16px;
   text-align: center;
   resize: none;
 }
@@ -80,6 +81,9 @@ h1 {
 .btn-pages {
   display: flex;
   justify-content: space-between;
+  height: 30px;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
   mix-blend-mode: multiply;
   z-index: 3;
 }
@@ -137,12 +141,13 @@ button:disabled {
     top: 0;
     left: 0;
     width: 656px;
-    height: 1310px;
+    height: 10000px;
+    /* height: 1310px; */
   }
 
   #ascii {
     display: block;
-     font-size: 36px;
+    font-size: 36px;
   }
 
   img {
@@ -162,6 +167,7 @@ button:disabled {
     height: 10000px;
     margin: 25px 0 15px 0;
     font-size: 33px;
+    line-height: 36px;
   }
 
   h1 {

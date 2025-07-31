@@ -114,10 +114,10 @@ async function searchTracks() {
             body: JSON.stringify({ uri: track.uri })
           });
           if (!res.ok) throw new Error("추가 실패");
-          alert(`"${track.name}"이 재생목록에 추가되었습니다.`);
+          // alert(`"${track.name}"이 재생목록에 추가되었습니다.`);
           loadPlaylistTracks();
         } catch(e) {
-          alert("추가 중 오류 발생: " + e.message);
+          // alert("추가 중 오류 발생: " + e.message);
         }
       });
 
@@ -125,7 +125,7 @@ async function searchTracks() {
         if (typeof playTrack === "function") {
           playTrack(track.uri);
         } else {
-          alert("플레이어가 아직 준비되지 않았습니다.");
+          // alert("플레이어가 아직 준비되지 않았습니다.");
         }
       });
 
@@ -133,7 +133,7 @@ async function searchTracks() {
     });
 
   } catch (e) {
-    alert("검색 중 오류 발생: " + e.message);
+    // alert("검색 중 오류 발생: " + e.message);
   }
 }
 
@@ -165,7 +165,7 @@ async function loadPlaylistTracks() {
     });
 
   } catch(e) {
-    alert("재생목록 불러오기 실패: " + e.message);
+    // alert("재생목록 불러오기 실패: " + e.message);
   }
 }
 
@@ -186,7 +186,7 @@ window.onload = () => {
 window.onSpotifyWebPlaybackSDKReady = () => {
   const token = sessionStorage.getItem("access_token");
   if (!token) {
-    alert("로그인이 필요합니다. 먼저 /login 으로 로그인하세요.");
+    // alert("로그인이 필요합니다. 먼저 /login 으로 로그인하세요.");
     return;
   }
 
@@ -267,7 +267,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       highlightPlayingTrack(trackUri);
       if (android) startPollingPlayerState();
     } catch (err) {
-      alert("재생 중 오류: " + err.message);
+      // alert("재생 중 오류: " + err.message);
     }
   }
 
@@ -294,7 +294,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       console.log(`▶ 이어서 전체 재생: index=${currentTrackIndex}, position=${pausedPositionMs}`);
       if (android) startPollingPlayerState();
     } catch (err) {
-      alert("이어 재생 실패: " + err.message);
+      // alert("이어 재생 실패: " + err.message);
     }
   };
 
@@ -327,7 +327,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       console.log("▶️ Android용 전체 재생 시작됨");
       startPollingPlayerState();
     } catch (err) {
-      alert("Android 재생 중 오류: " + err.message);
+      // alert("Android 재생 중 오류: " + err.message);
     }
   }
 
@@ -348,7 +348,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       });
       console.log("⏸ 일시 중지 @", pausedPositionMs);
     } catch (err) {
-      alert("일시 중지 실패: " + err.message);
+      // alert("일시 중지 실패: " + err.message);
     }
   };
 
@@ -362,7 +362,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
   window.playTrackAtIndex = (index) => {
     if (index < 0 || index >= playlistUris.length) {
-      alert("잘못된 곡 인덱스입니다.");
+      // alert("잘못된 곡 인덱스입니다.");
       return;
     }
     currentTrackIndex = index;
@@ -450,7 +450,7 @@ document.getElementById("playAllBtn").addEventListener("click", async () => {
       const items = await res.json();
       const uris = items.map(item => item.track?.uri).filter(Boolean);
       if (!uris.length) {
-        alert("재생 가능한 곡이 없습니다.");
+        // alert("재생 가능한 곡이 없습니다.");
         return;
       }
 
@@ -472,7 +472,7 @@ document.getElementById("playAllBtn").addEventListener("click", async () => {
     updatePlayAllButtonText();
 
   } catch (e) {
-    alert("재생 실패: " + e.message);
+    // alert("재생 실패: " + e.message);
   }
 });
 
@@ -636,34 +636,32 @@ function renderChannel(slug, page) {
   let url = `https://api.are.na/v2/channels/${slug}/contents?t=${time}&direction=desc&sort=position&page=${page}&per=${per}`;
 
   const asciiArtList = [
-`wwwwwwwwwwwwwwwwwwwwwwwwww
-   ,_('--,
-     (.--; ,--')_,
-         | ;--.)
-     .-. |.| .-.
-        \|\|/ .-.
-Pic.32
+`==========================
+
+,_('--,       
+   (.--; ,--')_,
+     | ;--.)
+ .-. |.| .-.
+  |/|/
+Sol-Ra.dio
 `,
 
-`wwwwwwwwwwwwwwwwwwwwwwwwww
-       _ _
-      (_\_)
-     (__<_{}
-      (_/_)
-     |\ |   
-      \\| /|
-       \|//
-        |/
-   ,.,.,|.,.,.
-wwwwwwwwwwwwwwwwwwwwwwwwww
-Sol–Ra.dio          Pic.32
+`==========================
+___
+{_)_)
+{__8__}
+(_(_}
+| |   
+ \| /|
+ |//
+Sol-Ra.dio
 `,
-`wwwwwwwwwwwwwwwwwwwwwwwwww
-   __   _
+`==========================
+ __   _
  _(  )_( )_
-(_   _    _)
-  (_) (__)
-Sol–Ra.dio ––––––––– Pic.32
+(_   __    _)
+(_) (__)
+Sol-Ra.dio
 `,
   ];
 
@@ -701,7 +699,9 @@ Sol–Ra.dio ––––––––– Pic.32
 ${block.title}
 
 ${block.description}
-${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}</textarea>
+
+${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}
+--------------------Pic.${totalPages - page + 1}</textarea>
                       `;
 
                     // basic: text
@@ -724,9 +724,9 @@ ${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}</textarea>
 ${block.title}
 
 ${block.description}
-${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}
 
-Pic.${totalPages - page + 1}</textarea>
+${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}
+--------------------Pic.${totalPages - page + 1}</textarea>
                       `;
                       
                     // iframe: Youtube  
