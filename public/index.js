@@ -173,7 +173,7 @@ async function loadPlaylistTracks() {
         <!-- <img src="${track.album.images[2]?.url || ''}" alt="album cover" /> -->
         <div class="track-info">
           <p>${track.name} | ${track.artists.map(a => a.name).join(", ")}</p>
-          <button class="deleteBtn"><span class="material-symbols-outlined">delete</span></button>
+          <button class="deleteBtn"><span class="material-symbols-outlined"></span></button>
         </div>
         <audio controls src="${track.preview_url || ''}"></audio>
       `;
@@ -549,7 +549,7 @@ function loadPlaylistTracks() {
           <!-- <img src="${track.album.images[2]?.url || ''}" alt="album cover" /> -->
           <div class="track-info">
             <p>${track.name} | ${track.artists.map(a => a.name).join(", ")}</p>
-            <button class="deleteBtn"><span class="material-symbols-outlined">delete</span></button>
+            <button class="deleteBtn"><span class="material-symbols-outlined"></span></button>
           </div>
         `;
 

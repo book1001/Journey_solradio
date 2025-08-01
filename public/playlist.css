@@ -23,6 +23,7 @@ input[type="text" i] {
   -o-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   backdrop-filter: blur(10px);
+  /* background: #fffbd4; */
   border: 1px solid black;
 }
 
@@ -39,6 +40,7 @@ input[type="text" i] {
 #result > div {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   border-top: 1px solid black;
   /* margin-bottom: 1rem;
   padding: 0.5rem;
@@ -57,7 +59,7 @@ input[type="text" i] {
   border-radius: 6px;
 } */
 
-.track-info {
+.track-item .track-info {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -74,7 +76,7 @@ input[type="text" i] {
   /* background-color: #a9a69d;  */
   /* border-left: 4px solid #1db954;  */
 }
-
+    
 
 audio {
   margin-left: 1rem;
