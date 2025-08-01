@@ -6,15 +6,28 @@
 }
 
 @font-face {
-  font-family: 'AppleChancery';
-  src: url('./font/AppleChancery.woff') format('woff');
+  font-family: 'Menlo-Italic';
+  src: url('./font/Menlo-Italic.woff') format('woff');
+  src: url('./font/Menlo-Italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Menlo-Bold';
+  src: url('./font/Menlo-Bold.woff') format('woff');
+  src: url('./font/Menlo-Bold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Menlo-BoldItalic';
+  src: url('./font/Menlo-BoldItalic.woff') format('woff');
+  src: url('./font/Menlo-BoldItalic.woff2') format('woff2');
 }
 
 
 /* text: drag color ================================================ */
 ::selection {
   color: white;
-  text-shadow: 0 0px 6px yellow;
+  text-shadow: 0 0px 6px black;
   text-decoration: none;
   /* color: #000000 !important;
   background: #ffffff !important; */
@@ -23,7 +36,7 @@
 /* Code for Firefox */
 ::-moz-selection { 
   color: white;
-  text-shadow: 0 0px 6px yellow;
+  text-shadow: 0 0px 6px black;
   text-decoration: none;
   /* color: #000000 !important;
   background: #ffffff !important; */
@@ -38,59 +51,18 @@ html,body {
   color: #333;
 }
 
-
 button {
   font-size: 12px;
   font-family: Menlo;
 }
 
-input[type="text" i] {
-  font-family: Menlo;
-  font-size: 12px;
-}
-
-
 a {
   text-decoration: none;
-}
-
-h2 {
-  margin-block-start: 0;
-  margin-block-end: 36px;
-  font-family: AppleChancery;
-  font-size: 25px;
-  text-align: center;
-}
-
-h3 {
-  font-family: AppleChancery;
-  font-size: 17px;
 }
 
 p {
   margin-block-start: 10px;
   margin-block-end: 10px;
-}
-
-figcaption {
-  font-style: italic;
-  font-size: 12px;
-  color: #767676;
-}
-
-sup {
-  vertical-align: text-top;
-}
-
-
-ol {
-  margin-block-start: 100px;
-  /* margin-block-end: 1em; */
-  padding-inline-start: 20px;
-}
-
-li {
-  padding-bottom: 10px;
 }
 
 

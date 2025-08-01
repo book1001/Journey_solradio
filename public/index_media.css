@@ -1,0 +1,56 @@
+/* ============================================================= */
+/* @media print */
+/* ============================================================= */
+@media print {
+  /* ============================================================= */
+  /* @media print: Default */
+  /* ============================================================= */
+  body * {
+    display: none;
+  }
+
+  #targetArea, #targetArea * {
+    display: block;
+  }
+
+  #targetArea {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 656px;
+    height: 10000px;
+    /* height: 1310px; */
+  }
+
+  /* ============================================================= */
+  /* @media print: Printed Img */
+  /* ============================================================= */
+  .img_screen {
+    aspect-ratio: auto;
+  }
+
+  .img_print img {
+    position: static;
+  }
+
+  .noise {
+    display: none !important;
+  }
+
+  /* ============================================================= */
+  /* @media print: Textarea */
+  /* ============================================================= */
+  #note, textarea {
+    width: 90%;
+    height: 10000px;
+    margin: 25px 0 15px 0;
+    font-size: 33px;
+    line-height: 36px;
+  }
+
+  #ascii {
+    display: block;
+    font-size: 36px;
+  }
+
+}

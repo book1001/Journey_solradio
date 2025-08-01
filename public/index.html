@@ -19,43 +19,57 @@
 </head>
 
 <body>
+  <!-- ================================================ -->
+  <!-- Playlist: Login -->
+  <!-- ================================================ -->
+  <a href="/login" id="loginBtn"></a>
+
+
+
+  <!-- ================================================ -->
+  <!-- Body Container -->
+  <!-- ================================================ -->
   <div class="body_container">
-
-
+    <!-- ================================================ -->
     <div id="targetArea" class="ARENA-container"></div>
-
+    <!-- ================================================ -->
     <div class="TV-btns">
       <div class="btn-pages">
         <button id="btn-P" disabled><</button>
         <button id="btn-N">></button>
       </div>
     </div>
-
+    <!-- ================================================ -->
     <div class="Play-btns">
-      <a href="/login"><button id="loginBtn"><span class="material-symbols-outlined">refresh</span></button></a>
+      <button id="refresh"><span class="material-symbols-outlined">refresh</span></button>
       <button id="playAllBtn"><span class="material-symbols-outlined">play_arrow</span></button>
-      <input type="text" id="searchInput" placeholder="Enter song name"/>
+      <textarea id="searchInput" rows="1" placeholder="Add your song to the playlist"></textarea>
+      <!-- <input type="text" id="searchInput" placeholder="Enter song name"/> -->
       <button id="searchBtn"><span class="material-symbols-outlined">search</span></button>
       <button onclick="window.print()"><span class="material-symbols-outlined">adf_scanner</span></button>
     </div>
-    
+    <!-- ================================================ -->
     <div id="playlistContainer"></div>
   </div>
 
 
 
-  <div id="result"></div>
+  <!-- ================================================ -->
+  <!-- Search Result -->
+  <!-- ================================================ -->
+  <div id="result">
+    <button id="close"><span class="material-symbols-outlined">close</span></button>
+  </div>
 
+  <!-- ================================================ -->
+  <!-- TV Noise -->
+  <!-- ================================================ -->
+  <audio id="noise-audio" autoplay src="sound/noise_short.mp3"></audio>
 
-  <!-- <input type="text" id="searchInput" placeholder="Search for a song...">
-  <button id="searchBtn"><span class="material-symbols-outlined">search</span></button>
-  <div id="result"></div> -->
 
   <!-- ====================================================== -->
   <!-- JS -->
   <!-- ====================================================== -->
-  <!-- <script src="script.js"></script> -->
-  
   <script src="https://sdk.scdn.co/spotify-player.js"></script>
   <script src="index.js"></script>
   <!-- <script src="playlist.js"></script>

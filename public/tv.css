@@ -1,98 +1,17 @@
-body {
-  margin: 0;
-  padding: 0;
-  background: lemonchiffon;
-}
-
-.Block {
-  width: 100%;
-  mix-blend-mode: multiply;
-}
-
-.img_container {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-}
-
-.img_container2 {
-  max-height: 700px;
-}
-
-img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: grayscale(1);
-
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-textarea {
-  display: block;
-  /* width: 90%; */
-  width: 210px;
-  margin: 0 auto 0 auto;
-  padding: 19px 0 20px 0;
-  border: 0;
-  font-size: 13px;
-  line-height: 16px;
-  text-align: center;
-  resize: none;
-}
-
-textarea:focus {
-  outline: none;
-  box-shadow: none;
-}
-
-h1 {
-  font-family: 'AppleChancery';
-  text-align: center;
-  font-size: 40px;
-}
 
 
-/* ============================================================= */
-/* TV: btns */
-/* ============================================================= */
-.TV-btns { 
-  text-align: center;
-}
 
 
-#btn-P {
+
+
+
+/* #nextPageButton {
   z-index: 3;
-}
+} */
 
-#btn-N {
-  z-index: 3;
-  /* order: 2; */
-}
 
-#nextPageButton {
-  z-index: 3;
-}
 
-.btn-pages {
-  display: flex;
-  justify-content: space-between;
-  height: 30px;
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
-  mix-blend-mode: multiply;
-  z-index: 3;
-}
 
-.btn-pages button {
-  width: 100%;
-  background: none;
-  border: none;
-}
 
 /* button:disabled {
   background: lightgray;
@@ -120,58 +39,3 @@ button:disabled {
   color: gray;
   opacity: 0.5;
 } */
-
-
-
-
-/* ============================================================= */
-/* @media print */
-/* ============================================================= */
-@media print {
-  body * {
-    display: none;
-  }
-
-  #targetArea, #targetArea * {
-    display: block;
-  }
-
-  #targetArea {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 656px;
-    height: 10000px;
-    /* height: 1310px; */
-  }
-
-  #ascii {
-    display: block;
-    font-size: 36px;
-  }
-
-  img {
-    position: static;
-  }
-
-  .img_container {
-    aspect-ratio: auto;
-  }
-
-  .noise {
-    display: none !important;
-  }
-
-  textarea {
-    width: 90%;
-    height: 10000px;
-    margin: 25px 0 15px 0;
-    font-size: 33px;
-    line-height: 36px;
-  }
-
-  h1 {
-  font-size: 80px;
-  }
-
-}

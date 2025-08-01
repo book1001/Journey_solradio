@@ -1,14 +1,4 @@
 /* ============================================================= */
-/* Variable */
-/* ============================================================= */
-:root {
-  --scrollbar-width: 20px;
-  --scrollbar-right: 0px;
-  --scrollbar-left: 17px;
-}
-
-
-/* ============================================================= */
 /* Basic */
 /* ============================================================= */
 html,body {
@@ -25,7 +15,15 @@ body {
   width: 0;
 }
 
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
 
+/* ============================================================= */
+/* Main Layout */
+/* ============================================================= */
 .body_container {  
   position: fixed;
   top: 0;
@@ -47,20 +45,159 @@ body {
   background: lemonchiffon;
 }
 
-/* #ascii {
-  display: none;
-} */
+
+/* ============================================================= */
+/* TV: Are.na Block */
+/* ============================================================= */
+.Block {
+  width: 100%;
+  mix-blend-mode: multiply;
+}
 
 
-/* input, button {
-  padding: 0.5rem;
-  font-size: 1rem;
-} */
+/* ============================================================= */
+/* TV: Img Container */
+/* ============================================================= */
+.img_screen {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  pointer-events: none;
+}
 
-.list {
+.img_print {
+  max-height: 700px;
+}
+
+.img_print img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1);
+
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+
+/* ============================================================= */
+/* TV: Textarea */
+/* ============================================================= */
+#note, textarea {
+  display: block;
+  /* width: 90%; */
+  width: 210px;
+  margin: 0 auto 0 auto;
+  padding: 19px 0 20px 0;
+  border: 0;
+  font-size: 13px;
+  line-height: 16px;
+  text-align: center;
+  resize: none;
+}
+
+#note, textarea:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+
+/* ============================================================= */
+/* TV: btns */
+/* ============================================================= */
+.TV-btns { 
+  text-align: center;
+}
+
+.btn-pages {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  /* align-items: baseline; */
+  height: 30px;
+  border-top: 1px solid black;
   border-bottom: 1px solid black;
+  mix-blend-mode: multiply;
+  z-index: 3;
+}
+
+.btn-pages button {
+  width: 100%;
+}
+
+#btn-P {
+  z-index: 3;
+}
+
+#btn-N {
+  z-index: 3;
+}
+
+
+
+/* ============================================================= */
+/* Playlist: Login */
+/* ============================================================= */
+#loginBtn {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 50px;
+  height: 50px;
+  background: none;
+  z-index: 2;
+}
+
+
+/* ============================================================= */
+/* Playlist: Btns */
+/* ============================================================= */
+.Play-btns {
+  display: grid; 
+  grid-auto-columns: 1fr; 
+  grid-auto-rows: 1fr; 
+  grid-template-columns: auto auto 1fr auto auto;
+  grid-template-rows: 1fr; 
+  gap: 0px 10px; 
+  grid-template-areas: 
+    ". . . ."; 
+  padding: 16px 12px;
+}
+
+#searchInput, textarea {
+  width: 92%;
+  margin: auto;
+  padding: 4px;
+  resize: none;
+  background: none;
+  border: 2px double gray;
+  font-size: 12px;
+  text-align: left;
+}
+
+#searchInput, textarea:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+
+/* ============================================================= */
+/* Playlist: List */
+/* ============================================================= */
+.deleteBtn {
+  display: none;
+}
+
+
+/* ============================================================= */
+/* Search: Modal
+/* ============================================================= */
+#close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding-top: 3px;
+  opacity: 0.8;
+  font-size: 10px;
 }

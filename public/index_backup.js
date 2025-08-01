@@ -90,20 +90,8 @@ async function searchTracks() {
     if (!Array.isArray(tracks)) throw new Error("잘못된 데이터 형식");
 
     const resultDiv = document.getElementById("result");
-    resultDiv.style.display = "block";
     resultDiv.innerHTML = "";
 
-    // 닫기 버튼
-    const closeBtn = document.createElement("button");
-    closeBtn.id = "close";
-    // closeBtn.classList.add("material-symbols-outlined");
-    closeBtn.textContent = "close";
-    closeBtn.addEventListener("click", () => {
-      resultDiv.style.display = "none";
-    });
-    resultDiv.appendChild(closeBtn);
-
-    // 검색 결과
     tracks.forEach(track => {
       const div = document.createElement("div");
       div.innerHTML = `
@@ -113,7 +101,7 @@ async function searchTracks() {
           <p>${track.artists.map(a => a.name).join(", ")}</p>
         </div>
         <button class="addBtn"><span class="material-symbols-outlined">add</span></button>
-        <button class="playBtn" style="display: none;">Play</button>
+        <button class="playBtn">Play</button>
       `;
 
       const addBtn = div.querySelector(".addBtn");
@@ -128,9 +116,6 @@ async function searchTracks() {
           if (!res.ok) throw new Error("추가 실패");
           // alert(`"${track.name}"이 재생목록에 추가되었습니다.`);
           loadPlaylistTracks();
-
-          const resultDiv = document.getElementById("result");
-          resultDiv.style.display = "none";
         } catch(e) {
           // alert("추가 중 오류 발생: " + e.message);
         }
@@ -146,9 +131,6 @@ async function searchTracks() {
 
       resultDiv.appendChild(div);
     });
-
-    const textarea = document.getElementById("searchInput");
-    textarea.value = "";
 
   } catch (e) {
     // alert("검색 중 오류 발생: " + e.message);
@@ -173,28 +155,9 @@ async function loadPlaylistTracks() {
         <!-- <img src="${track.album.images[2]?.url || ''}" alt="album cover" /> -->
         <div class="track-info">
           <p>${track.name} | ${track.artists.map(a => a.name).join(", ")}</p>
-          <button class="deleteBtn"><span class="material-symbols-outlined">delete</span></button>
         </div>
         <audio controls src="${track.preview_url || ''}"></audio>
       `;
-
-      const deleteBtn = div.querySelector(".deleteBtn");
-      deleteBtn.addEventListener("click", async (e) => {
-        e.stopPropagation();
-
-        try {
-          const res = await fetchWithRetry("/delete-track", {
-            method: "POST",
-            body: JSON.stringify({ uri: track.uri })
-          });
-
-          if (!res.ok) throw new Error("삭제 실패");
-          loadPlaylistTracks(); // UI 새로고침
-        } catch (err) {
-          alert("삭제 중 오류 발생: " + err.message);
-        }
-      });
-
       div.addEventListener("click", () => {
         window.playTrackAtIndex(idx);
       });
@@ -208,18 +171,6 @@ async function loadPlaylistTracks() {
 
 
 document.getElementById("searchBtn").addEventListener("click", searchTracks);
-
-document.getElementById("searchInput").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    searchTracks();
-  }
-});
-
-document.getElementById("close").addEventListener("click", () => {
-  const resultDiv = document.getElementById("result");
-  resultDiv.style.display = "none";
-});
 
 window.onload = () => {
   loadPlaylistTracks();           // 기존 onload 함수 1
@@ -549,27 +500,8 @@ function loadPlaylistTracks() {
           <!-- <img src="${track.album.images[2]?.url || ''}" alt="album cover" /> -->
           <div class="track-info">
             <p>${track.name} | ${track.artists.map(a => a.name).join(", ")}</p>
-            <button class="deleteBtn"><span class="material-symbols-outlined">delete</span></button>
           </div>
         `;
-
-        const deleteBtn = div.querySelector(".deleteBtn");
-        deleteBtn.addEventListener("click", async (e) => {
-          e.stopPropagation();
-
-          try {
-            const res = await fetchWithRetry("/delete-track", {
-              method: "POST",
-              body: JSON.stringify({ uri: track.uri })
-            });
-
-            if (!res.ok) throw new Error("삭제 실패");
-            loadPlaylistTracks(); // UI 새로고침
-          } catch (err) {
-            alert("삭제 중 오류 발생: " + err.message);
-          }
-        });
-
         div.addEventListener("click", () => {
           window.playTrackAtIndex(idx);
         });
@@ -579,57 +511,31 @@ function loadPlaylistTracks() {
 }
 
 // 현재 곡 강조하는 함수
-// function highlightPlayingTrack(trackUri) {
-//   const currentlyPlayingEl = document.querySelector(".playing");
-//   const currentHighlightedUri = currentlyPlayingEl?.getAttribute("data-uri");
-
-//   if (currentHighlightedUri === trackUri) return; // 🛑 이미 강조된 곡이면 무시
-
-//   document.querySelectorAll("[data-uri]").forEach(el => {
-//     el.classList.remove("playing");
-//   });
-
-//   const current = document.querySelector(`[data-uri="${trackUri}"]`);
-//   if (current) current.classList.add("playing");
-// }
-
-
 function highlightPlayingTrack(trackUri) {
-  // 기존 강조 제거
+  const currentlyPlayingEl = document.querySelector(".playing");
+  const currentHighlightedUri = currentlyPlayingEl?.getAttribute("data-uri");
+
+  if (currentHighlightedUri === trackUri) return; // 🛑 이미 강조된 곡이면 무시
+
   document.querySelectorAll("[data-uri]").forEach(el => {
     el.classList.remove("playing");
-
-    // 이전 #playing span 제거 (중복 방지)
-    const existingIndicator = el.querySelector("#playing");
-    if (existingIndicator) existingIndicator.remove();
   });
 
-  // 현재 재생 중인 항목 강조
   const current = document.querySelector(`[data-uri="${trackUri}"]`);
-  if (current) {
-    current.classList.add("playing");
-
-    // #playing 표시 추가
-    // const playingSpan = document.createElement("span");
-    // playingSpan.id = "playing";
-    // playingSpan.classList.add("material-symbols-outlined");
-    // playingSpan.textContent = "•";
-    // current.querySelector(".track-info")?.appendChild(playingSpan);
-  }
+  if (current) current.classList.add("playing");
 }
 
-// =============================●=============================================================
+
+
+// ==========================================================================================
 // TV
 // ==========================================================================================
-// let slug = 'sol-ra-dio';
-let slug = 'twa-memories';
+let slug = 'sol-ra-dio';
 let page = 1; // Initialize the page number
 let totalPages = 1; // Initialize total pages
 let buttonsPerPage = 15;
 
-// 실시간 동기화를 위한 전역 상태
-let currentSlug = slug;
-let currentPage = page;
+
 
 // =============================================================
 // TV: btns
@@ -637,24 +543,16 @@ let currentPage = page;
 
 document.getElementById('btn-N').addEventListener('click', function() {
   page++;
-  currentPage = page;
-  playNoiseAudio();
-  fetchTotalPages(slug).then(() => {
-    renderChannel(slug, page);
-    btnPages();
-    btnPageCounter();
-  });
+  renderChannel(slug, page);
+  btnPages();
+  btnPageCounter();
 });
 
 document.getElementById('btn-P').addEventListener('click', function() {
   page--;
-  currentPage = page;
-  playNoiseAudio();
-  fetchTotalPages(slug).then(() => {
-    renderChannel(slug, page);
-    btnPages();
-    btnPageCounter();
-  });
+  renderChannel(slug, page);
+  btnPages();
+  btnPageCounter();
 });
 
 function btnPageCounter() {
@@ -665,7 +563,7 @@ function btnPageCounter() {
 function btnPages() {
   const paginationContainer = document.querySelector('.btn-pages');
 
-  // 기존 숫자 버튼만 제거 (이전/다음 버튼은 남기기)
+  // 👉 기존 숫자 버튼만 제거 (이전/다음 버튼은 남기기)
   const buttons = paginationContainer.querySelectorAll('button');
   buttons.forEach(btn => {
     if (!['btn-P', 'btn-N'].includes(btn.id)) {
@@ -677,7 +575,7 @@ function btnPages() {
   const startPage = Math.max(1, page - Math.floor(buttonsPerPage / 2));
   const endPage = Math.min(totalPages, startPage + buttonsPerPage - 1);
 
-  // 이전 버튼 뒤에 페이지 번호 삽입
+  // 👉 이전 버튼 뒤에 페이지 번호 삽입
   const nextBtn = document.getElementById('btn-N');
   for (let i = startPage; i <= endPage; i++) {
     const button = document.createElement('button');
@@ -685,13 +583,9 @@ function btnPages() {
     button.disabled = (i === page);
     button.addEventListener('click', function() {
       page = i;
-      currentPage = i;
-      playNoiseAudio();
-      fetchTotalPages(slug).then(() => {
-        renderChannel(slug, page);
-        btnPages();
-        btnPageCounter();
-      });
+      renderChannel(slug, page);
+      btnPages();
+      btnPageCounter();
     });
     paginationContainer.insertBefore(button, nextBtn); // 다음 버튼 앞에 추가
   }
@@ -800,19 +694,14 @@ Sol-Ra.dio
                     // mp4, mp3
                     case "Attachment":
                       return `
-                      <div class="img_screen">
-                        <div class="img_print">
-                          <img class="Block_img noise" src="img_tv/noise_4.gif">
-                          <img class="Block_img dithered" src="${block.image.large.url}"/>
-                        </div>
-                      </div>
+                      <div class="img_container"><img class="Block_img dithered" src="${block.image.large.url}"/></div>
                       <textarea id="note" rows="3">
 ${block.title}
 
 ${block.description}
 
 ${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}
--------------------Pic.${totalPages - page + 1}</textarea>
+--------------------Pic.${totalPages - page + 1}</textarea>
                       `;
 
                     // basic: text
@@ -824,19 +713,20 @@ ${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}
                     // basic: image
                     case "Image":
                       return `
-                      <div class="img_screen">
-                        <div class="img_print">
-                          <img class="Block_img noise" src="img_tv/noise_4.gif">
-                          <img class="Block_img dithered" src="${block.image.large.url}"/>
-                        </div>
+                      <div class="img_container">
+                      <div class="img_container2">
+                      <img class="Block_img noise" src="img_tv/noise_4.gif">
+                      <img class="Block_img dithered" src="${block.image.large.url}"/>
                       </div>
+                      </div>
+                      <audio autoplay src="sound/noise_short.mp3"></audio>
                       <textarea id="note" rows="3">
 ${block.title}
 
 ${block.description}
 
 ${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}
--------------------Pic.${totalPages - page + 1}</textarea>
+--------------------Pic.${totalPages - page + 1}</textarea>
                       `;
                       
                     // iframe: Youtube  
@@ -847,6 +737,7 @@ ${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}
                         <img class="Block_loop_img" style="transform: translate(0, -100%);" src="${block.image.large.url}">
                         <img class="Block_loop_img" src="${block.image.large.url}">
                         <img class="Block_loop_img" style="transform: translate(0, 100%);" src="${block.image.large.url}">
+                        <audio autoplay src="sound/noise_short.mp3"></audio>
                       </div>
                       `;
 
@@ -858,6 +749,7 @@ ${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}
                         <img class="Block_loop_img" style="transform: translate(0, -100%);" src="${block.image.large.url}">
                         <img class="Block_loop_img" src="${block.image.large.url}">
                         <img class="Block_loop_img" style="transform: translate(0, 100%);" src="${block.image.large.url}">
+                        <audio autoplay src="sound/noise_short.mp3"></audio>
                       </div>
                       `;
                       
@@ -876,57 +768,6 @@ ${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}
   })
 }
 
-
-// ================================================
-// 실시간 자동 업데이트 추가 (30초마다)
-// ================================================
-
-// setInterval(() => {
-//   fetchTotalPages(currentSlug).then(() => {
-//     renderChannel(currentSlug, currentPage);
-//     btnPages();
-//     btnPageCounter();
-//   });
-// }, 5000); // 30,000ms = 30초
-
-// document.getElementById('refresh').addEventListener('click', function() {
-//   playNoiseAudio();
-//   fetchTotalPages(slug).then(() => {
-//     renderChannel(slug, page);
-//     btnPages();
-//     btnPageCounter();
-//   });
-// });
-
-document.getElementById('refresh').addEventListener('click', function () {
-  playNoiseAudio();
-
-  // 최신 페이지 번호 계산 후 이동
-  fetchTotalPages(slug).then(() => {
-    // 최신 콘텐츠가 있는 페이지는 1페이지 (정렬 순서가 최신이기 때문)
-    page = 1;
-    currentPage = 1;
-
-    renderChannel(slug, page);
-    btnPages();
-    btnPageCounter();
-  });
-});
-
-
-// ================================================
-// Noise 재생
-// ================================================
-function playNoiseAudio() {
-  const audio = document.getElementById('noise-audio');
-  if (audio) {
-    audio.currentTime = 0; // 항상 처음부터 재생
-    audio.play().catch(e => {
-      // 사용자 상호작용 없을 때는 play()가 실패할 수 있음 → 무시해도 됨
-      console.warn("Audio play failed:", e);
-    });
-  }
-}
 
 //   "id": 76969,
 //   "title": "The Working Sheepdog ( Border Collies ) in training",
@@ -953,7 +794,7 @@ function playNoiseAudio() {
 //   "connection_id": 716562,
 //   "connected_at": "2016-05-16T00:59:42.901Z",
 //   "connected_by_user_id": 128,
-//   "connected_by_username": "Chris Sherrón", // ${block.connected_by_username}
+//   "connected_by_username": "Chris Sherrón",
 //   "connected_by_user_slug": "chris-sherron"
 
 

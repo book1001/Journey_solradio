@@ -134,6 +134,32 @@ app.post("/add", (req, res) => {
   });
 });
 
+app.post("/delete-track", (req, res) => {
+  const token = req.session.access_token;
+  const uri = req.body.uri;
+
+  if (!token) return res.status(401).send("로그인 필요");
+  if (!uri) return res.status(400).send("삭제할 트랙 URI가 없습니다.");
+
+  request({
+    method: "DELETE",
+    url: `https://api.spotify.com/v1/playlists/${shared_playlist_id}/tracks`,
+    headers: { Authorization: "Bearer " + token },
+    body: {
+      tracks: [{ uri }]
+    },
+    json: true,
+  }, (err, _, body) => {
+    if (err) {
+      console.error("❌ 삭제 실패:", err);
+      return res.status(500).send("Spotify 삭제 실패");
+    }
+    res.json({ success: true });
+  });
+});
+
+
+
 
 app.get("/create-playlist", (req, res) => {
   const access_token = req.session.access_token;
