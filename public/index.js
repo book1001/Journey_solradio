@@ -751,6 +751,7 @@ function renderChannel(slug, page) {
   let per = 1;
   let url = `https://api.are.na/v2/channels/${slug}/contents?t=${time}&direction=desc&sort=position&page=${page}&per=${per}`;
 
+  const picNumber = String(totalPages - page + 1).padStart(3, "0");
   const asciiArtList = [
 `=========================
 
@@ -762,16 +763,17 @@ function renderChannel(slug, page) {
 Sol-Ra.dio
 `,
 
-`=========================
-___
-{_)_)
-{__8__}
-(_(_}
-| |   
- \| /|
- |//
-Sol-Ra.dio
-`,
+`
+WWWWWWWWWWWWWWWWWWWWWWWWW
+       ____
+___    {__)_)
+{_)_}   {__8__}
+{__8__}.  (_(_}.  
+(_)_)   |\|    
+  |\|/|    \| /|.  
+ ,.\|/.,,   |//..  
+WWWWWWWWWWWWWWWWWWWWWWWWW`,
+
 `=========================
  __   _
  _(  )_( )_
@@ -822,7 +824,9 @@ ${block.title}
 ${block.description}
 
 ${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}
--------------------Pic.${totalPages - page + 1}</textarea>
+Sol-Ra.dio        Pic.${picNumber}
+
+ㅤ</textarea>
                       `;
 
                     // basic: text
@@ -840,13 +844,14 @@ ${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}
                           <img class="Block_img dithered" src="${block.image.large.url}"/>
                         </div>
                       </div>
-                      <textarea id="note" rows="3">
+                      <textarea id="note" rows="23">
 ${block.title}
 
 ${block.description}
-
 ${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}
--------------------Pic.${totalPages - page + 1}</textarea>
+Sol-Ra.dio        Pic.${picNumber}
+
+ㅤ</textarea>
                       `;
                       
                     // iframe: Youtube  
