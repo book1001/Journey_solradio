@@ -32,7 +32,6 @@
 
   .img_print img {
     position: static;
-    margin: auto;
   }
 
   .noise {
@@ -43,7 +42,7 @@
   /* @media print: Textarea */
   /* ============================================================= */
   #note, textarea {
-    width: 100%;
+    width: 97%;
     height: 10000px;
     margin: 25px 0 15px 0;
     font-size: 33px;
