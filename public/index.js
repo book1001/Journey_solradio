@@ -844,7 +844,7 @@ Sol-Ra.dio        Pic.${picNumber}
                           <img class="Block_img dithered" src="${block.image.large.url}"/>
                         </div>
                       </div>
-                      <textarea id="note" rows="23">
+                      <textarea id="note" rows="3">
 ${block.title}
 
 ${block.description}
