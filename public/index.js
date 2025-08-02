@@ -620,11 +620,11 @@ function highlightPlayingTrack(trackUri) {
     current.classList.add("playing");
 
     //#playing 표시 추가
-    const playingSpan = document.createElement("span");
-    playingSpan.id = "playing";
-    playingSpan.classList.add("material-symbols-outlined");
-    playingSpan.textContent = "•";
-    current.querySelector(".track-info")?.appendChild(playingSpan);
+    // const playingSpan = document.createElement("span");
+    // playingSpan.id = "playing";
+    // playingSpan.classList.add("material-symbols-outlined");
+    // playingSpan.textContent = "•";
+    // current.querySelector(".track-info")?.appendChild(playingSpan);
   }
 }
 

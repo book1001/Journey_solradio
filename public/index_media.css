@@ -17,7 +17,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 656px;
+    /* width: 656px; */
+    width: 600px;
     height: 10000px;
     /* height: 1310px; */
   }
