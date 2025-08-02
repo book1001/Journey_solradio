@@ -753,8 +753,7 @@ function renderChannel(slug, page) {
 
   const picNumber = String(totalPages - page + 1).padStart(3, "0");
   const asciiArtList = [
-`
-=============================
+`=============================
 
 ,_('--,       
    (.--; ,--')_,
@@ -763,8 +762,7 @@ function renderChannel(slug, page) {
   |/|/
 =============================`,
 
-`
-wwwwwwwwwwwwwwwwwwwwwwwwwwwww
+`wwwwwwwwwwwwwwwwwwwwwwwwwwwww
        ____
 ___    {__)_)
 {_)_}   {__>__}
@@ -774,14 +772,12 @@ ___    {__)_)
  ,.\|/.,,   |//..  
 wwwwwwwwwwwwwwwwwwwwwwwwwwwww`,
 
-`
------------------------------
+`-----------------------------
  __   _
  _(  )_( )_
 (_   __    _)
 (_) (__)
------------------------------
-`,
+-----------------------------`,
   ];
 
 
@@ -852,7 +848,7 @@ ${block.description}
 ${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}
 Sol-Ra.dio            Pic.${picNumber}
 
-✄                            </textarea>
+.                            </textarea>
                       `;
                       
                     // iframe: Youtube  
