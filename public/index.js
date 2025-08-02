@@ -752,7 +752,7 @@ function renderChannel(slug, page) {
   let url = `https://api.are.na/v2/channels/${slug}/contents?t=${time}&direction=desc&sort=position&page=${page}&per=${per}`;
 
   const asciiArtList = [
-`===========================
+`=========================
 
 ,_('--,       
    (.--; ,--')_,
@@ -762,7 +762,7 @@ function renderChannel(slug, page) {
 Sol-Ra.dio
 `,
 
-`===========================
+`=========================
 ___
 {_)_)
 {__8__}
@@ -772,7 +772,7 @@ ___
  |//
 Sol-Ra.dio
 `,
-`===========================
+`=========================
  __   _
  _(  )_( )_
 (_   __    _)
