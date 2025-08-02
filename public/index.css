@@ -67,7 +67,8 @@ button {
 }
 
 .img_print {
-  max-height: 700px;
+  /* max-height: 700px; */
+  max-height: 580px;
 }
 
 .img_print img {

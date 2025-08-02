@@ -772,12 +772,12 @@ ___    {__)_)
  ,.\|/.,,   |//..  
 wwwwwwwwwwwwwwwwwwwwwwwwwwwww`,
 
-`-----------------------------
+`=============================
  __   _
  _(  )_( )_
 (_   __    _)
 (_) (__)
------------------------------`,
+=============================`,
   ];
 
 
@@ -819,11 +819,8 @@ wwwwwwwwwwwwwwwwwwwwwwwwwwwww`,
 ${block.title}
 
 ${block.description}
-
 ${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}
-Sol-Ra.dio            Pic.${picNumber}
-
-✄</textarea>
+Sol-Ra.dio            Pic.${picNumber}</textarea>
                       `;
 
                     // basic: text
@@ -846,9 +843,7 @@ ${block.title}
 
 ${block.description}
 ${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}
-Sol-Ra.dio            Pic.${picNumber}
-
-.                            </textarea>
+Sol-Ra.dio            Pic.${picNumber}</textarea>
                       `;
                       
                     // iframe: Youtube  
