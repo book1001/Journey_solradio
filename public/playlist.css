@@ -90,8 +90,8 @@ input[type="text" i] {
 }
 
 .playing {
-  font-family: Menlo-Italic;
-  /* background-color: #a9a69d;  */
+  font-family: 'Menlo-Italic';
+  background-color: #a9a69d; 
   /* border-left: 4px solid #1db954;  */
 }
     
