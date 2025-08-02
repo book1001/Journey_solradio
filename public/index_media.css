@@ -17,8 +17,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 656px;
-    /* width: 630px; */
+    /* width: 656px; */
+    width: 630px;
     height: 10000px;
     /* height: 1310px; */
   }
@@ -42,7 +42,7 @@
   /* @media print: Textarea */
   /* ============================================================= */
   #note, textarea {
-    width: 97%;
+    width: 99%;
     height: 10000px;
     margin: 25px 0 15px 0;
     font-size: 33px;
