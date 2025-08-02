@@ -231,26 +231,13 @@ document.getElementById("close").addEventListener("click", () => {
   resultDiv.style.display = "none";
 });
 
-// window.onload = () => {
-//   loadPlaylistTracks();           // 기존 onload 함수 1
-//   fetchTotalPages(slug).then(() => {
-//     goToPage(1); // 초기 로딩
-//   });
-// };
-
-// window.onload = () => {
-//   loadPlaylistTracks();
-//   fetchTotalPages(slug).then(() => {
-//     console.log("🎯 초기 totalPages:", totalPages);
-//     goToPage(totalPages); // totalPages 세팅 후 호출
-//   });
-// };
-
 window.onload = () => {
-  loadPlaylistTracks(); // 있다면 유지
+  loadPlaylistTracks();           // 기존 onload 함수 1
+  renderTitle(slug);              // 기존 onload 함수 2
   fetchTotalPages(slug).then(() => {
-    console.log("🎯 초기 totalPages:", totalPages);
-    goToPage(totalPages);  // 최신 페이지로 이동
+    renderChannel(slug, page);
+    btnPages();
+    btnPageCounter();
   });
 };
 
@@ -646,47 +633,44 @@ function highlightPlayingTrack(trackUri) {
 // ==========================================================================================
 // let slug = 'sol-ra-dio';
 let slug = 'twa-memories';
-let page = 1; // 실제 보여주는 콘텐츠 인덱스 (1부터 시작)
-let totalPages = 1; // 전체 콘텐츠 수 = 페이지 수 (콘텐츠 1개당 1페이지)
+let page = 1; // Initialize the page number
+let totalPages = 1; // Initialize total pages
 let buttonsPerPage = 15;
 
-let arenaPage = 1; // Are.na API의 page=1, 2, 3...
-let cachedContents = []; // 현재 arenaPage에서 받아온 100개 콘텐츠 캐시
-
 // 실시간 동기화를 위한 전역 상태
-// let currentSlug = slug;
-// let currentPage = page;
-
-
+let currentSlug = slug;
+let currentPage = page;
 
 // =============================================================
 // TV: btns
 // =============================================================
 
-
-
-
-function goToPage(newPage) {
-  console.log('▶ goToPage 호출:', newPage);
-  page = newPage;
-  arenaPage = Math.floor((page - 1) / 100) + 1;
+document.getElementById('btn-N').addEventListener('click', function() {
+  page++;
+  currentPage = page;
   playNoiseAudio();
-  loadArenaPage(slug, arenaPage);
-}
+  fetchTotalPages(slug).then(() => {
+    renderChannel(slug, page);
+    btnPages();
+    btnPageCounter();
+  });
+});
 
-document.getElementById('btn-N').addEventListener('click', () => goToPage(page - 1));
-document.getElementById('btn-P').addEventListener('click', () => goToPage(page + 1));
-
-  
-// =============================================================
-// 페이지 버튼 및 상태
-// =============================================================
+document.getElementById('btn-P').addEventListener('click', function() {
+  page--;
+  currentPage = page;
+  playNoiseAudio();
+  fetchTotalPages(slug).then(() => {
+    renderChannel(slug, page);
+    btnPages();
+    btnPageCounter();
+  });
+});
 
 function btnPageCounter() {
-  document.getElementById('btn-P').disabled = (page === totalPages);
-  document.getElementById('btn-N').disabled = (page === 1);
+  document.getElementById('btn-P').disabled = (page === 1);
+  document.getElementById('btn-N').disabled = (page === totalPages);
 }
-
 
 function btnPages() {
   const paginationContainer = document.querySelector('.btn-pages');
@@ -702,19 +686,17 @@ function btnPages() {
   const oldButtons = Array.from(paginationContainer.querySelectorAll('button'));
   oldButtons.forEach(btn => {
     if (!['btn-P', 'btn-N'].includes(btn.id)) {
-      btn.remove();
+      btn.remove(); // 기존 숫자 버튼 제거
     }
   });
 
   const nextBtn = document.getElementById('btn-N');
 
-  // 현재 페이지가 속한 블록 단위로 버튼 범위 계산
-  // (예: page=103이면 [103~89], page=88이면 [88~74])
-  const blockIndex = Math.floor((totalPages - page) / buttonsPerPage);
-  const endPage = totalPages - blockIndex * buttonsPerPage;
-  const startPage = Math.max(1, endPage - buttonsPerPage + 1);
+  // 역순으로 시작 페이지부터 끝 페이지까지 버튼 생성
+  // 항상 totalPages 부터 (totalPages - buttonsPerPage + 1) 까지
+  const endPage = totalPages;
+  const startPage = Math.max(1, totalPages - buttonsPerPage + 1);
 
-  // 역순으로 버튼 생성
   for (let i = endPage; i >= startPage; i--) {
     const button = document.createElement('button');
     button.textContent = i;
@@ -726,67 +708,29 @@ function btnPages() {
 
 
 
+
+
 // =============================================================
-// 콘텐츠 불러오기
+// API: Basic
 // =============================================================
 
-function loadArenaPage(slug, arenaPage) {
-  const url = `https://api.are.na/v2/channels/${slug}/contents?page=${arenaPage}&per=100`;
-  return fetch(url)
-    .then(res => res.json())
-    .then(data => {
-      cachedContents = data.contents;
+function renderTitle(slug) {
+  // Fetch the channel title from the Are.na API
+  let url = `https://api.are.na/v2/channels/${slug}/collaborators`;
 
-      // 마지막 페이지 감지: 100개 미만이면 그게 마지막 페이지
-      if (data.contents.length < 100) {
-        const accurateTotalPages = (arenaPage - 1) * 100 + data.contents.length;
-        if (accurateTotalPages !== totalPages) {
-          totalPages = accurateTotalPages;
-          console.log("🎯 정확한 totalPages 갱신됨:", totalPages);
-
-          // 현재 totalPages에 맞춰 다시 이동
-          goToPage(totalPages);
-          return; // 중복 처리 방지
-        }
-      }
-
-      renderChannel(slug, page);
-      btnPages();
-      btnPageCounter();
-    });
+  fetch(url)
+    .then(response => response.json())
+    .then(data => document.title = data.channel_title);
 }
 
-
-
-// function fetchTotalPages(slug) {
-//   const url = `https://api.are.na/v2/channels/${slug}`;
-//   return fetch(url)
-//     .then(res => res.json())
-//     .then(data => {
-//       // ✅ 가능한 필드 모두 체크
-//       totalPages = data.length || data.contents_count;
-
-//       if (!totalPages) {
-//         console.warn("❌ totalPages를 계산할 수 없습니다. 응답 구조를 확인해주세요.", data);
-//       } else {
-//         console.log("✅ totalPages 계산됨:", totalPages);
-//       }
-//     })
-//     .catch(err => {
-//       console.error("❌ totalPages 계산 실패:", err);
-//     });
-// }
-
 function fetchTotalPages(slug) {
-  const url = `https://api.are.na/v2/channels/${slug}`;
+  let url = `https://api.are.na/v2/channels/${slug}`;
   return fetch(url)
-    .then(res => res.json())
+    .then(response => response.json())
     .then(data => {
-      totalPages = data.length || data.contents_count;
-      console.log("✅ totalPages 계산됨:", totalPages);
-    })
-    .catch(err => {
-      console.error("❌ totalPages 계산 실패:", err);
+      let totalContents = data.length; // Get total contents
+      let per = 1; // Number of contents per page
+      totalPages = Math.ceil(totalContents / per); // Calculate total pages
     });
 }
 
@@ -797,21 +741,27 @@ function fetchTotalPages(slug) {
 // =============================================================
 
 function renderChannel(slug, page) {
-  const localIndex = (page - 1) % 100;
+  if (!cachedContents || cachedContents.length === 0) return;
+
+  // 페이지에 맞는 로컬 인덱스 (0~99) 역순으로 계산
+  // 예: cachedContents.length가 100이면 0 -> 99, 1 -> 98, ...
+  const localIndex = cachedContents.length - 1 - ((page - 1) % 100);
+
   const block = cachedContents[localIndex];
   if (!block) return;
 
-  const picNumber = String(page).padStart(3, "0");
-  const asciiArtList = [
-`=============================
+  // 전체 페이지 수 기준으로 역순 Pic 번호 계산
+  const picNumber = String(totalPages - page + 1).padStart(3, "0");
 
+  const asciiArtList = [
+    `=============================
 ,_('--,       
    (.--; ,--')_,
      | ;--.)
  .-. |.| .-.
   |/|/
 =============================`,
-`wwwwwwwwwwwwwwwwwwwwwwwwwwwww
+    `wwwwwwwwwwwwwwwwwwwwwwwwwwwww
        ____
 ___    {__)_)
 {_)_}   {__>__}
@@ -820,7 +770,7 @@ ___    {__)_)
   |\|/|    \| /|.  
  ,.\|/.,,   |//..  
 wwwwwwwwwwwwwwwwwwwwwwwwwwwww`,
-`=============================
+    `=============================
  __   _
  _(  )_( )_
 (_   __    _)
@@ -872,6 +822,7 @@ Sol-Ra.dio            Pic.${picNumber}</textarea>
 }
 
 
+
 // ================================================
 // 실시간 자동 업데이트 추가 (30초마다)
 // ================================================
@@ -898,7 +849,13 @@ document.getElementById('refresh').addEventListener('click', function () {
 
   // 최신 페이지 번호 계산 후 이동
   fetchTotalPages(slug).then(() => {
-    goToPage(totalPages);
+    // 최신 콘텐츠가 있는 페이지는 1페이지 (정렬 순서가 최신이기 때문)
+    page = 1;
+    currentPage = 1;
+
+    renderChannel(slug, page);
+    btnPages();
+    btnPageCounter();
   });
 });
 
