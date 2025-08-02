@@ -91,9 +91,20 @@ async function searchTracks() {
 
     const resultDiv = document.getElementById("result");
     resultDiv.style.display = "block";
-    resultDiv.innerHTML = "";
+    resultDiv.innerHTML = ""; // 기존 내용 초기화
 
-    // 닫기 버튼
+    // 모달 박스 생성
+    const modal = document.createElement("div");
+    modal.id = "result-modal";
+    
+    // 모달 배경 생성
+    const modalBg = document.createElement("div");
+    modalBg.id = "result-bg";
+    modalBg.addEventListener("click", () => {
+      resultDiv.style.display = "none";
+    });
+
+    // 닫기 버튼 생성
     const closeBtn = document.createElement("button");
     closeBtn.id = "close";
     // closeBtn.classList.add("material-symbols-outlined");
@@ -101,13 +112,13 @@ async function searchTracks() {
     closeBtn.addEventListener("click", () => {
       resultDiv.style.display = "none";
     });
-    resultDiv.appendChild(closeBtn);
 
-    // 검색 결과
+    modal.appendChild(closeBtn); // 모달 안에 버튼 넣기
+
+    // 트랙 리스트 추가
     tracks.forEach(track => {
       const div = document.createElement("div");
       div.innerHTML = `
-        <!-- <img src="${track.album.images[2]?.url || ''}" alt="album cover" /> -->
         <div class="track-info">
           <p><strong>${track.name}</strong></p>
           <p>${track.artists.map(a => a.name).join(", ")}</p>
@@ -126,34 +137,33 @@ async function searchTracks() {
             body: JSON.stringify({ uri: track.uri })
           });
           if (!res.ok) throw new Error("추가 실패");
-          // alert(`"${track.name}"이 재생목록에 추가되었습니다.`);
           loadPlaylistTracks();
-
-          const resultDiv = document.getElementById("result");
           resultDiv.style.display = "none";
-        } catch(e) {
-          // alert("추가 중 오류 발생: " + e.message);
+        } catch (e) {
+          console.error("추가 오류:", e.message);
         }
       });
 
       playBtn.addEventListener("click", () => {
         if (typeof playTrack === "function") {
           playTrack(track.uri);
-        } else {
-          // alert("플레이어가 아직 준비되지 않았습니다.");
         }
       });
 
-      resultDiv.appendChild(div);
+      modal.appendChild(div); // 트랙을 모달에 추가
     });
 
-    const textarea = document.getElementById("searchInput");
-    textarea.value = "";
+    resultDiv.appendChild(modal); // 모달을 result 안에 추가
+    resultDiv.appendChild(modalBg);
+
+    // 검색창 초기화
+    document.getElementById("searchInput").value = "";
 
   } catch (e) {
-    // alert("검색 중 오류 발생: " + e.message);
+    console.error("검색 중 오류:", e.message);
   }
 }
+
 
 async function loadPlaylistTracks() {
   try {
