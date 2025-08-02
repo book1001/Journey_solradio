@@ -753,33 +753,34 @@ function renderChannel(slug, page) {
 
   const picNumber = String(totalPages - page + 1).padStart(3, "0");
   const asciiArtList = [
-`=========================
+`
+=============================
 
 ,_('--,       
    (.--; ,--')_,
      | ;--.)
  .-. |.| .-.
   |/|/
-Sol-Ra.dio
-`,
+=============================`,
 
 `
-WWWWWWWWWWWWWWWWWWWWWWWWW
+wwwwwwwwwwwwwwwwwwwwwwwwwwwww
        ____
 ___    {__)_)
-{_)_}   {__8__}
-{__8__}.  (_(_}.  
+{_)_}   {__>__}
+{__<__}.  (_(_}.  
 (_)_)   |\|    
   |\|/|    \| /|.  
  ,.\|/.,,   |//..  
-WWWWWWWWWWWWWWWWWWWWWWWWW`,
+wwwwwwwwwwwwwwwwwwwwwwwwwwwww`,
 
-`=========================
+`
+-----------------------------
  __   _
  _(  )_( )_
 (_   __    _)
 (_) (__)
-Sol-Ra.dio
+-----------------------------
 `,
   ];
 
@@ -824,9 +825,9 @@ ${block.title}
 ${block.description}
 
 ${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}
-Sol-Ra.dio        Pic.${picNumber}
+Sol-Ra.dio            Pic.${picNumber}
 
-ㅤ</textarea>
+✄</textarea>
                       `;
 
                     // basic: text
@@ -849,9 +850,9 @@ ${block.title}
 
 ${block.description}
 ${asciiArtList[Math.floor(Math.random() * asciiArtList.length)]}
-Sol-Ra.dio        Pic.${picNumber}
+Sol-Ra.dio            Pic.${picNumber}
 
-ㅤ</textarea>
+✄                            </textarea>
                       `;
                       
                     // iframe: Youtube  
