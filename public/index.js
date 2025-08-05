@@ -648,7 +648,7 @@ function highlightPlayingTrack(trackUri) {
 let slug = 'twa-memories';
 let page = 1; // 실제 보여주는 콘텐츠 인덱스 (1부터 시작)
 let totalPages = 1; // 전체 콘텐츠 수 = 페이지 수 (콘텐츠 1개당 1페이지)
-let buttonsPerPage = 15;
+let buttonsPerPage = 14;
 
 let arenaPage = 1; // Are.na API의 page=1, 2, 3...
 let cachedContents = []; // 현재 arenaPage에서 받아온 100개 콘텐츠 캐시
