@@ -8,7 +8,8 @@ html,body {
 }
 
 body {
-  background: lemonchiffon;
+  /* background: lemonchiffon; */
+  background: #fff7b2;
 }
 
 ::-webkit-scrollbar { 
@@ -42,7 +43,8 @@ button {
     "."
     "."
     ".";
-  background: lemonchiffon;
+  /* background: lemonchiffon; */
+  background: #fff7b2;
 }
 
 
