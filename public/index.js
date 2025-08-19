@@ -644,8 +644,8 @@ function highlightPlayingTrack(trackUri) {
 // =============================●=============================================================
 // TV
 // ==========================================================================================
-// let slug = 'sol-ra-dio';
-let slug = 'twa-memories';
+let slug = 'sol-ra-dio';
+// let slug = 'twa-memories';
 let page = 1; // 실제 보여주는 콘텐츠 인덱스 (1부터 시작)
 let totalPages = 1; // 전체 콘텐츠 수 = 페이지 수 (콘텐츠 1개당 1페이지)
 let buttonsPerPage = 13;
