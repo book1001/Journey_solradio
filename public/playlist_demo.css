@@ -2,7 +2,7 @@
 #playlistContainer {    
   overflow-x: hidden;
   overflow-y: auto;
-  border-top: 1px solid black;
+  border-top: 1px solid #00e900;
 }
 
 input[type="text" i] {
@@ -34,11 +34,10 @@ input[type="text" i] {
   transform: translate(-50%, -50%);
   /* backdrop-filter: blur(10px); */
   /* background: lemonchiffon; */
-  /* background: #fffbd4; */
-  /* background: #fff7b2; */
-  background: #fff6a5;
   /* background: #fff388; */
-  border: 1px solid black;
+  background: #00ff00;
+  /* background: #fffbd4; */
+  border: 1px solid #00e900;
   z-index: 2;
 }
 
@@ -53,7 +52,7 @@ input[type="text" i] {
 #playlistContainer > div {
   display: flex;
   align-items: center;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid #00e900;
   /* margin-bottom: 1rem;
   padding: 0.5rem;
   border: 1px solid #ddd;
@@ -64,7 +63,7 @@ input[type="text" i] {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid black;
+  border-top: 1px solid #00e900;
   /* margin-bottom: 1rem;
   padding: 0.5rem;
   border: 1px solid #ddd;

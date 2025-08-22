@@ -48,7 +48,8 @@ html,body {
   font-family: 'Menlo';
   /* font-family: Arial, sans-serif;  */
   font-size: 10px;
-  color: #333;
+  /* color: #333; */
+  color: #00ff00;
 }
 
 button {
@@ -72,6 +73,7 @@ p {
 
 /* Material Symbols ================================================ */
 .material-symbols-outlined {
+  color: #00e900;
   font-variation-settings:
   'FILL' 1,
   'wght' 400,

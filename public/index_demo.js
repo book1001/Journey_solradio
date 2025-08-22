@@ -645,7 +645,6 @@ function highlightPlayingTrack(trackUri) {
 // TV
 // ==========================================================================================
 let slug = 'sol-ra-dio';
-// let slug = 'fcumona-4ui';
 // let slug = 'twa-memories';
 let page = 1; // 실제 보여주는 콘텐츠 인덱스 (1부터 시작)
 let totalPages = 1; // 전체 콘텐츠 수 = 페이지 수 (콘텐츠 1개당 1페이지)
@@ -821,12 +820,6 @@ ___    {__)_)
   |\|/|    \| /|.  
  ,.\|/.,,   |//..  
 wwwwwwwwwwwwwwwwwwwwwwwwwwwww`,
-`=============================
- __   _
- _(  )_( )_
-(_   __    _)
-(_) (__)
-=============================`,
   ];
 
   let html = '';
@@ -837,8 +830,8 @@ wwwwwwwwwwwwwwwwwwwwwwwwwwwww`,
       html = `
         <div class="img_screen">
           <div class="img_print">
-            <img class="Block_img noise" src="img_tv/noise_4.gif">
-            <img class="Block_img dithered" src="${block.image.large.url}"/>
+         <!--   <img class="Block_img noise" src="img_tv/noise_4.gif">
+            <img class="Block_img dithered" src="${block.image.large.url}"/> -->
           </div>
         </div>
         <textarea id="note" rows="3">

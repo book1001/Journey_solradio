@@ -46,8 +46,8 @@ button {
     ".";
   /* background: lemonchiffon; */
   /* background: #fff7b2; */
-  background: #fff6a5;
   /* background: #fff388; */
+  background: #00ff00;
 }
 
 
@@ -104,6 +104,7 @@ button {
   text-align: center;
   resize: none;
   overflow: hidden;
+  color: transparent;
 }
 
 #note, textarea:focus {
@@ -136,14 +137,15 @@ button {
   display: flex;
   justify-content: space-between;
   height: 30px;
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
   mix-blend-mode: multiply;
   z-index: 3;
 }
 
 .btn-pages button {
   width: 100%;
+  color: #00e900;
 }
 
 #btn-P {
@@ -192,8 +194,7 @@ button {
   padding: 4px;
   resize: none;
   background: none;
-  border: 3px double gray;
-  /* border: 2px double gray; */
+  border: 3px double #00e900;
   font-size: 12px;
   text-align: left;
 }
@@ -203,6 +204,9 @@ button {
   box-shadow: none;
 }
 
+#searchInput, textarea::placeholder {
+  color: transparent;
+}
 
 /* ============================================================= */
 /* Playlist: List */
@@ -222,4 +226,5 @@ button {
   padding-top: 3px;
   opacity: 0.8;
   font-size: 10px;
+  color:#00e900;
 }
