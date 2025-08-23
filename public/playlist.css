@@ -36,8 +36,8 @@ input[type="text" i] {
   /* background: lemonchiffon; */
   /* background: #fffbd4; */
   /* background: #fff7b2; */
-  background: #fff6a5;
-  /* background: #fff388; */
+  /* background: #fff6a5; */
+  background: #fff388;
   border: 1px solid black;
   z-index: 2;
 }
