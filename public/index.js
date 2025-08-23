@@ -644,8 +644,8 @@ function highlightPlayingTrack(trackUri) {
 // =============================●=============================================================
 // TV
 // ==========================================================================================
-// let slug = 'sol-ra-dio';
-let slug = 'fcumona-4ui';
+let slug = 'sol-ra-dio';
+// let slug = 'fcumona-4ui';
 // let slug = 'twa-memories';
 let page = 1; // 실제 보여주는 콘텐츠 인덱스 (1부터 시작)
 let totalPages = 1; // 전체 콘텐츠 수 = 페이지 수 (콘텐츠 1개당 1페이지)
@@ -804,6 +804,14 @@ function renderChannel(slug, page) {
 
   const picNumber = String(page).padStart(3, "0");
   const asciiArtList = [
+`=============================
+
+,_('--,       
+   (.--; ,--')_,
+     | ;--.)
+ .-. |.| .-.
+  |/|/
+=============================`,
 `wwwwwwwwwwwwwwwwwwwwwwwwwwwww
        ____
 ___    {__)_)
@@ -813,24 +821,12 @@ ___    {__)_)
   |\|/|    \| /|.  
  ,.\|/.,,   |//..  
 wwwwwwwwwwwwwwwwwwwwwwwwwwwww`,
-`wwwwwwwwwwwwwwwwwwwwwwwwwwwww
-       ____
-___    {__)_)
-{_)_}   {__>__}
-{__<__}.  (_(_}.  
-(_)_)   |\|    
-  |\|/|    \| /|.  
- ,.\|/.,,   |//..  
-wwwwwwwwwwwwwwwwwwwwwwwwwwwww`,
-`wwwwwwwwwwwwwwwwwwwwwwwwwwwww
-       ____
-___    {__)_)
-{_)_}   {__>__}
-{__<__}.  (_(_}.  
-(_)_)   |\|    
-  |\|/|    \| /|.  
- ,.\|/.,,   |//..  
-wwwwwwwwwwwwwwwwwwwwwwwwwwwww`,
+`=============================
+ __   _
+ _(  )_( )_
+(_   __    _)
+(_) (__)
+=============================`,
   ];
 
   let html = '';
